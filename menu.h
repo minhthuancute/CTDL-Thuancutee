@@ -83,11 +83,10 @@ int MenuDong(char td[][100], int size, int marginLeft){
 }
 
 int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[], int x){
-	cls(4, 35, 2, 60);
 	hidecursor();
 	Draw_frame(X, Y);
 	int chon = 0;
-			
+	cls(4, 35, 2, 110);
 	reset:
 		int step = 6;
 		for (int i=0; i<size; i++){
@@ -107,6 +106,9 @@ int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[
 			step += 4;
 		}
 		
+	step = 6;
+	gotoxy(arr[0], step+1);
+	
 	char kytu;
 	int count = 1;
 	do{

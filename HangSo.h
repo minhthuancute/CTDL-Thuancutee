@@ -8,3 +8,5 @@
 #define MAX 5000
 
 #define MAXLIST 500
+
+#define MAXDOCGIA 100000

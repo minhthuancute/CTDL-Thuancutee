@@ -16,6 +16,7 @@
 
 using namespace std;
 
+int soLuongDocGia = 0;
 
 /*    DAU SACH VA CAC HAM LIEN QUAN    */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +94,6 @@ void displayDS_DAUSACH(DS_DAUSACH &ds){
 		"Nha Xuat Ban",
 		"The Loai"
 	};
-	Draw_frame(X, Y);
 	SetColor(4);
 	int step = 45;
 	for(int i=0; i<6; i++){
@@ -126,12 +126,11 @@ void displayDS_DAUSACH(DS_DAUSACH &ds){
 // ADD 1 CUON SACH
 bool NhapDauSach(DS_DAUSACH &ds, DAU_SACH &sach){
 	int x = 50 , dem = 2;
-	gotoxy(x, 5);
 	ShowConsoleCursor(true);
-	cls(4, 60, 2, 110);
+	Draw_frame(X, Y);
+	cls(4, 35, 2, 110);
 	while (1){
 	Nhap:
-		Draw_frame(X, Y);
 		DrawBorder(1, 3, 38, 35, 3);
 		DrawBorder(41, 3, 90, 35, 3);
 		
@@ -229,7 +228,6 @@ void XoaSach(DS_DAUSACH &ds, string ISBN, int index){
 // ADD NHIEU CUON SACH SACH
 void NhapDSDS(DS_DAUSACH &ds){
 	DAU_SACH sach;
-
 	if (ds.soLuong == MAX_DAU_SACH){
 		displayStr("Danh sach day!!", 50, 5); return;
 	}
@@ -287,53 +285,50 @@ int randomID(){
 }
 
 // tree -> array
-//void TreetoArray(Tree t, DocGia a[], int &i){
-//	if (t == NULL)
-//		return;
-//
-//	else{
-//		ChuyenCayThanhMang(t->pLeft, a, i);
-//		a[i++] = t->info;
-//		ChuyenCayThanhMang(t->pRight, a, i);
-//	}
-//}
+void ChuyenCayThanhMang(Tree t, DocGia a[], int &i){
+	if (t == NULL)
+		return;
 
-void displayThe_DOCGIA(Tree &t){
+	ChuyenCayThanhMang(t->pLeft, a, i);
+	a[i++] = t->info;
+	ChuyenCayThanhMang(t->pRight, a, i);
+//	a[i++] = t->info;
+}
+
+void displayThe_DOCGIA(Tree t){
 	system("color f0");
-	int i = 0;
 	if(t == NULL)
 		return;
-		
-	char menu[4][20] = {
-		"Ma Doc Gia",
-		"Ho",
-		"Ten",
-		"Phai (Nam/Nu)"
-	};
-	Draw_frame(X, Y);
-	SetColor(4);
-	int step = 52;
-	for(int i=0; i<4; i++){
-		gotoxy(step, 4);
-		if(i == 0)
-			step += 16;
-		else
-			step += 20;
-		cout << menu[i];
-	}
+	SetColor(3);
 
-	SetColor(0);
-	gotoxy(47, 3 + i);
-	cout << t->info.maThe;
-	gotoxy(58, 3 + i);
-	cout << t->info.ho << endl;
-	gotoxy(68, 3 + i);
-	cout << t->info.ten << endl;
-	gotoxy(79, 3 + i);
-	cout << t->info.phai << endl;
-	gotoxy(89, 3 + i);
-	cout << t->info.trangThai << endl;
+	int x = 0;
+	DocGia* a = new DocGia[soLuongDocGia];
+	ChuyenCayThanhMang(t, a, x);
+ 
+	for(int i=0; i<soLuongDocGia; i++){
+		gotoxy(50, dong + i);
+		cout<<a[i].maThe;
+		gotoxy(65,dong + i);
+		cout<<a[i].ho;
+		gotoxy(82,dong + i);
+		cout<<a[i].ten;
+		gotoxy(99,dong + i);
+		cout<<a[i].phai;
+		gotoxy(116,dong + i);
+		cout<<a[i].trangThai;
+	}
+	
+//	maThe = a[i].maThe;
 }
+
+//void XuatDSDocGia(Tree t) {
+//	if(t == NULL)
+//		return;
+//
+//	XuatDSDocGia(t->pLeft);
+//	XuatMotDocGia(t, dem); dem++;
+//	XuatDSDocGia(t->pRight);
+//}
 
 //int Count_Node_Tree(Tree &root){
 //	int count = 0;
@@ -362,81 +357,90 @@ void displayThe_DOCGIA(Tree &t){
 //	 return count;
 //}
 
-bool AddDocGia(Tree& t, int ID) {
-	int x = 50 , dem = 2;
-	gotoxy(x, 5);
+bool AddDocGia(Tree &t, int ID) {
+	int x = 50 , dem = 2, step = 50;
 	ShowConsoleCursor(true);
-	cls(4, 60, 2, 110);
+	cls(4, 35, 3, 45);
 
-	ShowConsoleCursor(true);
-	system("cls");
-	Draw_frame(X, Y);
+	DrawBorder(1, 3, 45, 35, 0);
+	DrawBorder(48, 3, 82, 35, 0);
 
-	
-	// handle add
 	if (t == NULL) {
-		// cout
 		CAYNHIPHANTK_TheDocGia* p = new CAYNHIPHANTK_TheDocGia;
 		p->info.maThe = ID;
 
-		while(1){
-			Draw_frame(X, Y);
-			DrawBorder(1, 3, 45, 35, 3);
-			DrawBorder(48, 3, 82, 35, 3);
-//			displayThe_DOCGIA(t);
-
-			SetColor(3);
-			gotoxy(3, 5);
-			cout << "Ma Doc Gia";
-
-			DrawBorder(16, dem + 2, 27, 2, 3);
-			gotoxy(27, 5);
-			cout << p->info.maThe;
-
-			gotoxy(17, dem + 3);
-			SetColor(3);
-			gotoxy(3, dem + 6);
-			cout << "Ho";
-			gotoxy(3, dem + 9);
-			cout << "Ten";
-			gotoxy(3, dem + 12);
-			cout << "Phai(Nam/Nu)";
-
-			SetColor(0);
-			DrawBorder(16, dem + 5, 27, 2, 3);
-			DrawBorder(16, dem + 8, 27, 2, 3);
-			DrawBorder(16, dem + 11, 27, 2, 3);
-			
-			// bat dau nhap
-			fflush(stdin);
-			gotoxy(18, dem + 6);
-			getline(cin, p->info.ho);
-			gotoxy(18, dem + 9);
-			getline(cin, p->info.ten);
-			gotoxy(18, dem + 12);
-			getline(cin, p->info.phai);
-			p->info.trangThai = 0;
-			p->pLeft = NULL;
-			p->pRight = NULL;
-
-	//		t.soLuongDocGia++;
-			t = p;
-
-	  	// 	check continue
-			cout << "\n";
-			char exit;
-			gotoxy(15, 17);
-			SetColor(3);
-			cout << "An ENTER De Tiep Tuc.";
-			gotoxy(13, 18);
-			cout << "An Phim Bat Ki De Thoat!";
-			if(exit = getch() == Enter){
-				displayStr("Them Doc Gia Thanh Cong!", 10, 21);
-				return true;
-			}
+		char menu[5][20] = {
+			"Ma Doc Gia",
+			"Ho",
+			"Ten",
+			"Phai(Nam/Nu)",
+			"Trang Thai"
+		};
+//		Draw_frame(X, Y);
+		SetColor(4);
+		for(int i=0; i<5; i++){
+			gotoxy(step, 4);
+			if(i == 0)
+				step += 15;
 			else
-				return false;
+				step += 17;
+			cout << menu[i];
 		}
+
+		SetColor(3);
+		gotoxy(3, 5);
+		cout << "Ma Doc Gia";
+
+		DrawBorder(16, dem + 2, 27, 2, 3);
+		gotoxy(27, 5);
+		cout << p->info.maThe;
+
+		gotoxy(17, dem + 3);
+		SetColor(3);
+		gotoxy(3, dem + 6);
+		cout << "Ho";
+		gotoxy(3, dem + 9);
+		cout << "Ten";
+		gotoxy(3, dem + 12);
+		cout << "Phai(Nam/Nu)";
+
+		SetColor(0);
+		DrawBorder(16, dem + 5, 27, 2, 3);
+		DrawBorder(16, dem + 8, 27, 2, 3);
+		DrawBorder(16, dem + 11, 27, 2, 3);
+
+		// bat dau nhap
+		fflush(stdin);
+		gotoxy(17, dem + 6);
+		getline(cin, p->info.ho);
+		gotoxy(17, dem + 9);
+		getline(cin, p->info.ten);
+		gotoxy(17, dem + 12);
+		getline(cin, p->info.phai);
+
+		p->info.trangThai = 0;
+		p->pLeft = NULL;
+		p->pRight = NULL;
+		soLuongDocGia++;
+
+		t = p;
+		////	check continue
+		fflush(stdin);
+		char exit;
+		gotoxy(14, 17);
+		cout << "An ENTER De Tiep Tuc.";
+		gotoxy(12, 18);
+		cout << "An Phim Bat Ki De Thoat!";
+
+		if(exit = getch() == Enter){
+			SetColor(12);
+			gotoxy(12, 20);
+			cout << "Them Doc Gia Thanh Cong!";
+			Sleep(1000);
+			return true;
+		}
+		else
+			return false;
 
 	}
 	else {
@@ -448,7 +452,6 @@ bool AddDocGia(Tree& t, int ID) {
 		}
 	}
 }
-
 
 void DeleteNodeLeftRight(Tree& temp, Tree& t) {
 	if (t->pLeft != NULL) {
@@ -539,25 +542,28 @@ bool login(){
 
 // Cau a: them xoa sua THE DOC GIA
 void draw_case1(Tree t){
-	cls(4, 60, 2, 110);
 	system("color f0");
+	cls(4, 35, 2, 110);
 	ShowConsoleCursor(false);
 	int chon, res, arr[3] = {55, 57, 54};
+
 	while (1){
 		SetBGColor(3);
 		chon = MenuThuancutee(CauA, 3, 0, 29, arr, 50);
 		SetBGColor(15);
 		switch (chon){
 		case 1:
-			AddDocGia(t, randomID());
+			cls(4, 30, 30, 50);
+  			while(AddDocGia(t, randomID())){
+//				case1 = AddDocGia(t, randomID());
+				displayThe_DOCGIA(t);
+			}
 			break;
 		case 2:
-			system("cls");
-//			displayDS_DAUSACH(ds);
+
 			break;
 		case 3:
 			
-//			draw_case3();
 			break;
 		}
 		Sleep(1000);
@@ -565,13 +571,13 @@ void draw_case1(Tree t){
 }
 
 // Cau c: NHap thong tin dau sach va danh ma sach tu dong
-void draw_case3(){
-	cls(4, 50, 2, 100);
+void draw_case2(){
+	cls(4, 35, 2, 110);
 	DS_DAUSACH ds;
-	int chon, flag = 1, arr[7] = {55, 55, 55, 55, 55, 55, 55};
+	int chon, flag = 1, arr[7] = {54, 57, 57, 59, 59, 55, 57};
 	system("color f0");
 	while (1){
-		chon = MenuThuancutee(CauC, 7, 5, 30, arr, 52);
+		chon = MenuThuancutee(CauC, 7, 0, 30, arr, 50);
 		switch (chon){
 		case 1:
 			system("cls");
@@ -594,7 +600,7 @@ void draw_case3(){
 void Menu(char td[][100], Tree t){
 	system("color f0");
 	cls(4, 35, 2, 100);
-	int chon, arr[4] = {57, 59, 58, 61};
+	int chon, arr[4] = {57, 58, 58, 61};
 	while (1){
 		chon = MenuThuancutee(td, 4, 5, 22, arr, 53);
 		switch (chon){
@@ -602,10 +608,10 @@ void Menu(char td[][100], Tree t){
 			draw_case1(t);
 			break;
 		case 2:
-			draw_case3();
+			draw_case2();
 			break;
 		case 3:
-			draw_case3();
+			draw_case2();
 			break;
 //		case 4:
 			

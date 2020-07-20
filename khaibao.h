@@ -106,6 +106,7 @@ struct DocGia{
 
 struct CAYNHIPHANTK_TheDocGia{
 	DocGia info;
+
 	int	soLuongDocGia = 0;
 	CAYNHIPHANTK_TheDocGia* pLeft;
 	CAYNHIPHANTK_TheDocGia* pRight;
