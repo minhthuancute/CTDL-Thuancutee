@@ -129,10 +129,12 @@ char 	CauC[7][100] = 		{
                              "Ghi Danh Sach",
                              "Mo Danh Sach",
                              "Sap Xep Theo Ten Sach",
-                             "An ESC De Thoat!"};
+                             "Thoat!"};
 
 char 	CauA[8][100] = 		{
 							 "Them The Doc Gia Moi",
                              "Xoa The Doc Gia",
-                             "Hieu Chinh The Doc Gia"};
+                             "Hieu Chinh The Doc Gia",
+							 "Thoat!",
+							 };
                              
