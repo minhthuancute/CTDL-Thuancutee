@@ -55,15 +55,30 @@ typedef struct DS_DANHMUCSACH* PTR_DMS;
 
 //__________DAU SACH_____________
 // su dung danh sach tuyen tinh la 1 mang con tro
+//struct DauSach
+//{
+//	string ISBN;
+//	string tenSach;
+//	string tacGia;
+//	int soTrang;
+//	int NXB; //nam
+//	string theLoai;
+//
+//	int demSoLanMuon;//cau j
+//
+//	DS_DanhMucSach DMS;
+//};
 struct DAU_SACH{
-//	char ISBN[6]; // ma sach quoc te
-	string ISBN;
-	char tensach[50];
-	char tacgia[50];
+	string ISBN; // ma sach quoc te
+
+	string tensach;
+	string tacgia;
 	int sotrang;
 	int NXB; //nam xuat ban
-	//string theloai;
-	char theloai[50];
+	
+	int demSoLanMuon;//cau j
+	string theloai;
+//	char theloai[50];
 	DS_DANHMUCSACH *DMS;//Con tro se tro den cac dau sach tuong ung
 };
 

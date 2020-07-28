@@ -1,8 +1,5 @@
 
 #include <bits/stdc++.h>
-//#include <mylib.h>
-
-//#define X 134
 
 const int Y = 39;
 const int X = 134;
@@ -13,9 +10,7 @@ const int so_item = 10;
 const int dong = 6;
 const int cot = 40;
 
-// key up
 const int Up = 72;
-// key down
 const int Down = 80;
 
 char listMenu[so_item][100] =  {
