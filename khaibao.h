@@ -75,10 +75,10 @@ struct DAU_SACH{
 	string tacgia;
 	int sotrang;
 	int NXB; //nam xuat ban
-	
+
 	int demSoLanMuon;//cau j
 	string theloai;
-//	char theloai[50];
+	//	char theloai[50];
 	DS_DANHMUCSACH *DMS;//Con tro se tro den cac dau sach tuong ung
 };
 
@@ -113,7 +113,7 @@ struct DocGia{
 	int maThe;
 	string ho;
 	string ten;
-	string phai;
+	string phai = "Nam";
 	int trangThai;
 	//	DS_MuonTra DS_muontra;
 	DS_MUONTRA *DS_MUONTRA;
