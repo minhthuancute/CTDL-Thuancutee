@@ -22,6 +22,11 @@
 #define Up 72
 #define Down 80
 #define Space 32
+#define Esc 27
+#define F1 59
+#define F2 60
+#define F3 61
+
 
 using namespace std;
 
@@ -122,12 +127,11 @@ int GetKey(){
 }
 
 // Edit Value
-
-string EditValue(string str, bool isNumber, int x, int y, bool isName){
+string EditValue(string str, bool isNumber, int x, int y, bool isName){ // x: 17
 	ShowConsoleCursor(true);
     unsigned long long Number;
     int CurrentCusor = str.length() + x, countSpace = 0;
-	string temp = str;
+	string temp = str; // string result
 	char c;
 	bool isFirst = true;
 
@@ -144,6 +148,7 @@ string EditValue(string str, bool isNumber, int x, int y, bool isName){
 
 		// x-> cout string -> Min current cusor: x
 		if(c == Backspace){
+			DeleteOne(temp, CurrentCusor - x - 1);
 			CurrentCusor--;
 			if(CurrentCusor < x)
 				CurrentCusor = x;
@@ -152,16 +157,15 @@ string EditValue(string str, bool isNumber, int x, int y, bool isName){
 			// CurrentCusor = temp.length() + x ???
 			// function handle delete 1 char [0 -> length()-1]
 
-			DeleteOne(temp, CurrentCusor - x);
-			gotoxy(x, y);
-
 			if(isNumber && CurrentCusor == 0){
 				temp = "1";
 				CurrentCusor = 1;
 				cout << temp;
 			}
-			else
+			else{
+				gotoxy(x, y);
 				cout << temp;
+			}
 
 			gotoxy(CurrentCusor, y);
 		}
@@ -214,7 +218,7 @@ string EditValue(string str, bool isNumber, int x, int y, bool isName){
 				temp = NumberToString(StringToNumber(temp) - 1);
 
 			gotoxy(x, y);
-			cout << "                                ";
+			cout << "                    ";
 
 			gotoxy(x, y);
 			cout << temp;
@@ -235,7 +239,7 @@ string EditValue(string str, bool isNumber, int x, int y, bool isName){
 					temp += c;
 					gotoxy(x, y);
 					cout << temp;
-					gotoxy(CurrentCusor - 1, y);
+					gotoxy(CurrentCusor, y);
 				}
 			}
 		}
@@ -256,84 +260,92 @@ string EditValue(string str, bool isNumber, int x, int y, bool isName){
 						CurrentCusor++;
 						if(CurrentCusor <= temp.length() + x){
 							temp = InsertString(temp, CurrentCusor - 1 - x, c);
-							trim(temp);
 							gotoxy(x, y);
 							cout << temp;
 							gotoxy(CurrentCusor, y);
 						}
 						else if(CurrentCusor >= temp.length() + x){
 							temp += c;
-							trim(temp);
 							gotoxy(CurrentCusor - 1, y);
 							cout << c;
 						}
 					}
 				}
 				
-				
-//				CurrentCusor++;
-//				if(CurrentCusor <= temp.length() + x){
-//					temp = InsertString(temp, CurrentCusor - 1 - x, c);
-//					trim(temp);
-//					gotoxy(x, y);
-//					cout << temp;
-//					gotoxy(CurrentCusor, y);
-//				}
-//				else if(CurrentCusor >= temp.length() + x){
-//					temp += c;
-//					trim(temp);
-//					gotoxy(CurrentCusor - 1, y);
-//					cout << c;
-//				}
 			}
 		}
 
-		if (c == Enter){
-			trim(temp); // trim space temp
+		if (c == Enter && temp != "")
 			return temp;
+	}
+}
+// End Edit Value Input
+
+int ContinueOrExit(int y){
+	ShowConsoleCursor(false);
+	char input, arr[2][10] = {
+		"Luu",
+		"Thoat"
+	};
+	int chon = 0, step = 20;
+	reset:
+		step = 20;
+		for(int i=0; i<2; i++){
+			gotoxy(step, y);
+			if(i == chon){
+				SetColor(12);
+				cout << arr[i];
+			}
+			else{
+				SetColor(3);
+				cout << arr[i];
+			}
+			step += 16;
+		}
+
+	while(1){
+		input = getch();
+		switch(input){
+			case Left:
+				chon = 0;
+				goto reset;
+				break;
+
+			case Right:
+				chon = 1;
+				goto reset;
+				break;
+
+			case Enter:
+				return chon == 0 ? 59 : 27;
 		}
 	}
 }
 
-// End Edit Value Input
-
-/* End Cong Diem */
-
 /*    DAU SACH VA CAC HAM LIEN QUAN ( Mang con tro)    */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // LOAD FILE
-void OpenFile_DAUSACH(DS_DAUSACH &ds, char *fileName){
-	DAU_SACH sach;
-	FILE *f;
-	f = fopen(fileName, "rb");
-
-	if (f == NULL)
-		cout << "Load file err"; return;
-
-	ds.soLuong = 0;
-	while (fread(&sach, sizeof(DAU_SACH), 1, f) != 0){
-		ds.dausach[ds.soLuong] = new DAU_SACH;
-		*ds.dausach[ds.soLuong] = sach;
-		ds.soLuong++;
-	}
-	fclose(f);
-	cout << "load file success";
-	
-}
-
-// SAVE TO FILE
-void SaveFile_DAUSACH(DS_DAUSACH ds, char *fileName){
+//void OpenFile_DAUSACH(DS_DAUSACH &ds, char *fileName){
+//	DAU_SACH sach;
 //	FILE *f;
-//	if ((f = fopen(filename, "wb")) == NULL){
-//		cout << "Load file err"; return;
-//	}
-//	for (int i=0; i<ds.soLuong; i++)
-//		fwrite(ds.dausach[i], sizeof(DAU_SACH), 1, f);
+//	f = fopen(fileName, "rb");
 //
+//	if (f == NULL)
+//		cout << "Load file err"; return;
+//
+//	ds.soLuong = 0;
+//	while (fread(&sach, sizeof(DAU_SACH), 1, f) != 0){
+//		ds.dausach[ds.soLuong] = new DAU_SACH;
+//		*ds.dausach[ds.soLuong] = sach;
+//		ds.soLuong++;
+//	}
 //	fclose(f);
-//	cout << "Save file success";
-}
+//	cout << "load file success";
+//	
+//}
+
+
 
 int SearchDS_DAUSACH(DS_DAUSACH &DAUSACH, string maISBN){
    for (int i=0; i<DAUSACH.soLuong; i++){
@@ -381,134 +393,269 @@ void displayDS_DAUSACH(DS_DAUSACH &ds){
 		"Ten Sach",
 		"Tac Gia",
 		"So Trang",
-		"Nha Xuat Ban",
+		"Nam",
 		"The Loai"
 	};
-	SetColor(4);
-	int step = 45;
+	int arrX[] = {43, 52, 72, 93, 106, 115};
+	
+	SetColor(12);
 	for(int i=0; i<6; i++){
-		gotoxy(step, 4);
-		if(i == 4)
-			step += 18;
-		else
-			step += 14;
+		gotoxy(arrX[i], 4);
 		cout << menu[i];
 	}
-	
-//	SetColor(0);
+
 	for(int i=0; i<ds.soLuong; i++){
-//		SetColor(0);
-		gotoxy(45, 6+i);
+		i == ds.soLuong - 1 ? SetColor(3) : SetColor(0);
+		gotoxy(arrX[0], 6 + i);
 		cout << ds.dausach[i]->ISBN;
-		gotoxy(59, 6+i);
+		gotoxy(arrX[1], 6 + i);
 		cout << ds.dausach[i]->tensach;
-		gotoxy(73, 6+i);
+		gotoxy(arrX[2], 6 + i);
 		cout << ds.dausach[i]->tacgia;
-		gotoxy(87, 6+i);
+		gotoxy(arrX[3], 6 + i);
 		cout << ds.dausach[i]->sotrang;
-		gotoxy(101, 6+i);
+		gotoxy(arrX[4], 6 + i);
 		cout << ds.dausach[i]->NXB;
-		gotoxy(119, 6+i);
+		gotoxy(arrX[5], 6 + i);
 		cout << ds.dausach[i]->theloai;
 	}
 }
 
+string TheLoai(){
+	ShowConsoleCursor(false);
+	char c, source[][50] = { // lenght: 5
+		"Tinh Cam",
+		"Tieu Thuyet",
+		"Truyen Tranh",
+		"Khoa Hoc&Xa Hoi",
+		"Sach Giao Khoa"
+	};
+	
+	int arrX[] = {21, 20, 19, 18, 18}, current = 0;
+	while(1){
+		gotoxy(18, 20);
+		cout << "                 ";
+		gotoxy(arrX[current], 20);
+		cout << source[current];
+		
+		c = GetKey();
+		switch(c){
+			case -75: // Case left
+				current--;
+				if(current < 0)
+					current = 4;
+					
+				break;
+				
+			case -77: // Case Right
+				current++;
+				if(current > 4)
+					current = 0;
+					
+				break;
+				
+			case Enter:
+				return source[current];
+
+		}
+	}
+
+}
+
 // ADD 1 CUON SACH
 bool NhapDauSach(DS_DAUSACH &ds, DAU_SACH &sach){
-	int x = 50 , count = 2, stepCls = 6;
+	sach.ISBN = RandomISBN(ds);
 	
-//	int SoLuong
-	ShowConsoleCursor(true);
+	int x = 50, count = 2;
+	int SoLuong = 1, ViTriDau = 1;
+	
+	ShowConsoleCursor(false);
 	Draw_frame(X, Y);
 	
-	cls(15, 20, 3, 34);
-	for(int i=1; i<=5; i++){
-		gotoxy(17, count + stepCls);
-		stepCls += 3;
-		cout << "              ";
-	}
+	DrawBorder(1, 3, 38, 35, 3); // Draw Table Left
+	DrawBorder(41, 3, 90, 35, 3); // Draw Table Right
 	
-	while (1){
-	Nhap:
-		DrawBorder(1, 3, 38, 35, 3);
-		DrawBorder(41, 3, 90, 35, 3);
-		displayDS_DAUSACH(ds);
-		
-		gotoxy(3, count + 3);
-		sach.ISBN = RandomISBN(ds);
-		SetColor(4);
-		cout << "Ma sach       ";
-		SetColor(0);
-		DrawBorder(16, count + 2, 20, 2, 3);
-		gotoxy(23, count + 3);
-		cout << sach.ISBN << "\n";
-		
-		SetColor(4);
-		gotoxy(3, count + 6);
-		cout << "Nam xuat ban";
-		gotoxy(3, count + 9);
-		cout << "So trang";
-		gotoxy(3, count + 12);
-		cout << "Ten sach";
-		gotoxy(3, count + 15);
-		cout << "Ten tac gia";
-		gotoxy(3, count + 18);
-		cout << "The loai";
-		
-		SetColor(0);
-		DrawBorder(16, count + 5, 20, 2, 3);
-		DrawBorder(16, count + 8, 20, 2, 3);
-		DrawBorder(16, count + 11, 20, 2, 3);
-		DrawBorder(16, count + 14, 20, 2, 3);
-		DrawBorder(16, count + 17, 20, 2, 3);
-		// So luong
-		DrawBorder(16, count + 20, 20, 2, 3);
-		// Vi tri
-		DrawBorder(16, count + 23, 20, 2, 3);
-		
-		/*         Handle Input          */
-		// NXB
-		gotoxy(17, count + 6);
-		cin >> sach.NXB;
-		
-		// So Trang
-		gotoxy(17, count + 9);
-		int tempSoTrang;
-		InputNumber(sach.sotrang);
-		
-		// Ten Sach
-		fflush(stdin);
-		gotoxy(17, count + 12);
-		getline(cin, sach.tensach);
-		
-		// Tac Gia
-		gotoxy(17, count + 15);
-		getline(cin, sach.tacgia);
-		
-		// The Loai
-		gotoxy(17, count + 18);
-		getline(cin, sach.theloai);
+	cls(5, 32, 3, 34); // cls Table left
+	displayDS_DAUSACH(ds);
 
-		// So Luong
-		gotoxy(17, count + 21);
-//		InputNumber(sach);
-		cout << "\n";
-		char exit;
-		gotoxy(10, 23);
-		cout << "An ENTER De Tiep Tuc.";
-		gotoxy(8, 24);
-		cout << "An Phim Bat Ki De Thoat!";
+	SetColor(3);
+	int y = 4;
+	for(int i=1; i<=8; i++){ // count = 2 -> 4, 7, 10
+		DrawBorder(13, y, 23, 2, 3);
+		y += 3;
+	}
+		
+	char exit, menu[8][20] = {
+		"Ma Sach",
+		"Ten Sach",
+		"Tac Gia",
+		"So Trang",
+		"Nam",
+		"The Loai",
+		"So Luong",
+		"Vi Tri"
+	};
+	
+//	5, 8, 11
+	SetColor(12);
+	y = 5;
+	for(int i=0; i<8; i++){
+		gotoxy(3, y);
+		cout << menu[i];
+		y += 3;
+	}
+		
+	SetColor(3);
+	gotoxy(23, count + 3);
+	cout << sach.ISBN << "\n";
+	
+//	The loai
+	gotoxy(14, 20);
+	cout << "<";
+	gotoxy(35, 20);
+	cout << ">";
+	
+//	y: 8, 11, 14, 17 -> 26
+	gotoxy(17, count + 12);
+	sach.tensach = EditValue("", false, 14, 8, false); // Ten Sach
+	
+	gotoxy(17, count + 15);
+	sach.tacgia = EditValue("", false, 14, 11, false); // Tac Gia
+	
+	gotoxy(17, count + 9);
+	sach.sotrang = StringToNumber(EditValue("", true, 14, 14, false)); // So Trang
+	
+	InputNXB: // Nan Xuat Ban
+	gotoxy(17, count + 6);
+//	cout << "            ";
+	sach.NXB = StringToNumber(EditValue(sach.NXB == NULL ? "" : NumberToString(sach.NXB), true, 14, 17, false)); 
+//	if(NumberToString(sach.NXB).length() != 4)
+//		goto InputNXB;
+	
+	gotoxy(17, count + 18);
+	sach.theloai = TheLoai(); // The Loai
 
-		if(exit = getch() == Enter){
-			gotoxy(7, 26);
-			SetColor(12);
-			cout << "Them Dau Sach Thanh Cong!";
-			return true;
+	gotoxy(17, count + 21);
+	SoLuong = StringToNumber(EditValue("", true, 14, 23, false)); // So Luong
+
+	gotoxy(17, count + 24);
+	ViTriDau = StringToNumber(EditValue("", true, 14, 26, false)); // Vi Tri Dau
+	
+	
+//	Edit Before Add
+//  reset edit input
+	int chon = 8, countEnter = 0;
+	char input;
+	SetColor(3);
+	gotoxy(14, 29);
+	cout << "An F1 De Luu!";
+	gotoxy(12, 30);
+	cout << "An ESC De Thoat!";
+	
+	reset:
+		ShowConsoleCursor(false);
+		SetColor(3);
+		y = 4;
+		
+		for(int i=0; i<8; i++){ // count = 2 -> 4, 7, 10,...
+			i == chon ? DrawBorder(13, y, 23, 2, 12) : DrawBorder(13, y, 23, 2, 3);
+			y += 3;
 		}
-		else
-			return false;
-   }
-	return true;
+		
+	while(1){
+		input = getch(); // Edit 8 field
+		switch(input){
+			case Up:
+				if(chon > 1)
+					chon--;
+				goto reset;
+				break;
+
+			case Down:
+				if(chon + 1 < 8)
+					chon++;
+				goto reset;
+				break;
+
+			
+			// case ENTER
+			case Enter:
+
+				switch(chon){
+					case 1: // Ten Sach
+						gotoxy(17, count + 12);
+						sach.tensach = EditValue(sach.tensach, false, 14, 8, false);
+						ShowConsoleCursor(false);
+						break;
+
+					case 2: // Tac Gia
+						gotoxy(17, count + 15);
+						sach.tacgia = EditValue(sach.tacgia, false, 14, 11, false);
+						ShowConsoleCursor(false);
+						break;
+
+					case 3: // So Trang
+						gotoxy(17, count + 9);
+						sach.sotrang = StringToNumber(EditValue(NumberToString(sach.sotrang), true, 14, 14, false));
+						ShowConsoleCursor(false);
+						break;
+
+					case 4: // Nam Xuat Ban
+						gotoxy(17, count + 6);
+						sach.NXB = StringToNumber(EditValue(sach.NXB == NULL ? "" : NumberToString(sach.NXB), true, 14, 17, false));
+						ShowConsoleCursor(false);
+						break;
+
+					case 5: // The Loai
+						gotoxy(17, count + 18);
+						sach.theloai = TheLoai();
+						ShowConsoleCursor(false);
+						break;
+
+					case 6: // So Luong
+						gotoxy(17, count + 21);
+						SoLuong = StringToNumber(EditValue("", true, 14, 23, false));
+						ShowConsoleCursor(false);
+						break;
+
+					case 7: // Vi Tri Dau
+						gotoxy(17, count + 24);
+						ViTriDau = StringToNumber(EditValue("", true, 14, 26, false));
+						ShowConsoleCursor(false);
+						break;
+
+				}
+				break;
+			// end case ENTER
+			
+			case F1: // Case Save
+				return true;
+				
+			case Esc:
+				return false;
+
+		}
+	}
+	// End edit before add
+}
+
+// ADD NHIEU CUON SACH SACH
+void NhapDSDS(DS_DAUSACH &ds){
+	DAU_SACH sach;
+	if (ds.soLuong == MAX_DAU_SACH){
+		displayStr("Danh sach day!!", 50, 5); return;
+ 	}
+
+	while (ds.soLuong < MAX_DAU_SACH){
+		ds.dausach[ds.soLuong] = new DAU_SACH;
+		bool temp = NhapDauSach(ds, sach);
+		*ds.dausach[ds.soLuong] = sach;
+		ds.soLuong++;
+
+		if (!temp){
+			break;
+		}
+	}
 }
 
 // DELETE SACH THEO ISBN
@@ -535,34 +682,88 @@ void XoaSach(DS_DAUSACH &ds, string ISBN, int index){
    }
 }
 
-// ADD NHIEU CUON SACH SACH
-void NhapDSDS(DS_DAUSACH &ds){
-	DAU_SACH sach;
-	if (ds.soLuong == MAX_DAU_SACH){
-		displayStr("Danh sach day!!", 50, 5); return;
- 	}
-
-	while (ds.soLuong < MAX_DAU_SACH){
-		ds.dausach[ds.soLuong] = new DAU_SACH;
-		bool temp = NhapDauSach(ds, sach);
-		*ds.dausach[ds.soLuong] = sach;
-		ds.soLuong++;
-		
-		if (!temp){
-			break;
-		}
-	}
-}
-
 /* KET THUC DAU SACH */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* DOC GIA VA CAC HAM LIEN (CAY NHI PHAN TIM KIEM) */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Read + Write File DOC GIA
+void SaveFile(char *FileName, int size, string *arr){
+	ofstream save;
+	save.open(FileName);
+	for(int i=0; i<size; i++)
+		save << arr[i] << endl;
+
+	save.close();
+}
+
+void ReadFile(char *FileName, int size, string *arr){
+	ifstream read;
+	read.open(FileName);
+	for(int i=0; i<size; i++)
+		read >> arr[i];
+
+	read.close();
+}
 
 void InitTree(Tree &t){
 	t = NULL;
+}
+
+void FileToTree(Tree &t){
+	ifstream read;
+	char *fileName = "file.dat";
+	read.open(fileName);
+		
+	int i = 0;
+//	soLuongDocGia++;
+	while(read != NULL){
+//		if(t == NULL){
+			CAYNHIPHANTK_TheDocGia* p = new CAYNHIPHANTK_TheDocGia;
+			read >> p->info.maThe;
+
+			read >> p->info.ho;
+
+			read >> p->info.ten;
+
+			read >> p->info.phai;
+			p->info.trangThai = 0;
+			p->pLeft = NULL;
+			p->pRight = NULL;
+			soLuongDocGia++;
+			
+			t = p;
+//		}
+
+	}
+
+	read.close();
+
+//	if (t == NULL) {
+//		CAYNHIPHANTK_TheDocGia* p = new CAYNHIPHANTK_TheDocGia;
+//		p->info.maThe = MaRandom;
+//
+//		getline(cin, p->info.ho);
+//
+//		getline(cin, p->info.ten);
+//
+//		getline(cin, p->info.phai);
+//		p->info.trangThai = 0;
+//		p->pLeft = NULL;
+//		p->pRight = NULL;
+//		soLuongDocGia++;
+//		t = p;
+//	}
+//	else {
+//		if (t->info.maThe > MaRandom) {
+//			ThemDocGia(t->pLeft, MaRandom);
+//		}
+//		if (t->info.maThe < MaRandom) {
+//			ThemDocGia(t->pRight, MaRandom);
+//		}
+//	}
+
 }
 
 int randomID(){
@@ -579,13 +780,13 @@ int randomID(){
 }
 
 // Tree -> array
-void ChuyenCayThanhMang(Tree t, DocGia a[], int &i){
+void TreeToArray(Tree t, DocGia a[], int &i){
 	if (t == NULL)
 		return;
 
-	ChuyenCayThanhMang(t->pLeft, a, i);
+	TreeToArray(t->pLeft, a, i);
 	a[i++] = t->info;
-	ChuyenCayThanhMang(t->pRight, a, i);
+	TreeToArray(t->pRight, a, i);
 }
 
 // Sort Tree
@@ -600,109 +801,196 @@ void ChuyenCayThanhMang(Tree t, DocGia a[], int &i){
 //	return 0;
 //}
 
-
-// Compare Sort (dg1, dg2: -> 1: dg1>dg2, 2: dg1>dg2, 3: dg1==dg2
-int Compare(DocGia dg1, DocGia dg2){
-	if(dg1.ten < dg2.ten)
-		return 1;
-	else if(dg1.ten == dg2.ten){
-		if(dg1.ho < dg2.ho)
-			return 1;
-	}
-	
-	return false;
-}
-
+// sort dau sach
 // Quick sort DOC GIA
-int partition_DOCGIA(DocGia arr[], int start, int end){
-    string pivot = arr[end].ten;
-    DocGia t;
-    
-    int  P_index = start;
-
-    for(int i=start; i<end; i++){
-    	// compare
-		if(Compare(arr[i], arr[end])){
-		    t = arr[i];
-		    
-		    arr[i] = arr[P_index];
-		    arr[P_index] = t;
-		    P_index++;
-		}
-	}
-
-	t = arr[end];
-	arr[end] = arr[P_index];
-	arr[P_index] = t;
-
-	return P_index;
- }
- 
-void Quicksort_DOCGIA(DocGia *arr, int start, int end){
-	if(start < end){
-		int P_index = partition_DOCGIA(arr, 0, soLuongDocGia - 1);
-		Quicksort_DOCGIA(arr, start, P_index-1);
-		Quicksort_DOCGIA(arr, P_index+1, end);
-	}
-}
+//int partition_DOCGIA(DocGia arr[], int start, int end){
+//    string pivot = arr[end].ten;
+//    DocGia t;
+//    
+//    int  P_index = start;
+//
+//    for(int i=start; i<end; i++){
+//    	// compare
+//		if(Compare(arr[i], arr[end])){
+//		    t = arr[i];
+//		    
+//		    arr[i] = arr[P_index];
+//		    arr[P_index] = t;
+//		    P_index++;
+//		}
+//	}
+//
+//	t = arr[end];
+//	arr[end] = arr[P_index];
+//	arr[P_index] = t;
+//
+//	return P_index;
+// }
+// 
+//void Quicksort_DOCGIA(DocGia *arr, int start, int end){
+//	if(start < end){
+//		int P_index = partition_DOCGIA(arr, 0, soLuongDocGia - 1);
+//		Quicksort_DOCGIA(arr, start, P_index-1);
+//		Quicksort_DOCGIA(arr, P_index+1, end);
+//	}
+//}
 // End Quick sort DOC GIA
+
+
 
 // Buble Sort DOC GIA
 
-void BubleSort_DOCGIA(DocGia *arr){
+bool CompareWord(string str1, string str2){
+	int length = min(str1.length(), str2.length());
+	// a=97, b=98 -> a < b
+	// alphabet a, b, c, d,... -> z
+	for(int i=0; i<length; i++){
+		// a, b, c, d, ... -> z
+		if( str1.substr(i, 1) > str2.substr(i, 1))
+			return true;
+		else
+			return false;
+	}
+
+}
+
+// Compare Sort (dg1, dg2: -> 1: dg1>dg2, 2: dg1>dg2, 3: dg1==dg2
+bool CompareName(DocGia dg1, DocGia dg2){
+	if(dg1.ho == dg2.ho && dg1.ten == dg2.ten)
+		return false;
+	else if(dg1.ten == dg2.ten){
+		if(dg1.ho > dg2.ho)
+			return true;
+	}
+	else
+	if(dg1.ten > dg2.ten)
+		return true;
+}
+
+void SortByName_DOCGIA(DocGia *arr){
 	if(arr == NULL)
 		return;
 		
 	DocGia temp;
 	for(int i=0; i<soLuongDocGia; i++)
-		for(int j=i; j<soLuongDocGia-i-1; j++){
-			if(Compare(arr[j], arr[j+1])){
-				temp = arr[j+1];
-				arr[j+1] = arr[j];
-				arr[j] = temp;
+		for(int j=0; j<soLuongDocGia - 1; j++){
+			if(CompareName(arr[j], arr[j + 1])){
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+		}
+}
+
+void SortByID_DOCGIA(DocGia *arr){
+	if(arr == NULL)
+		return;
+
+	DocGia temp;
+	for(int i=0; i<soLuongDocGia; i++)
+		for(int j=0; j<soLuongDocGia - 1; j++){
+			if(arr[j].maThe > arr[j+1].maThe){
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
 			}
 		}
 }
 
 // End Buble Sort DOC GIA
 
-void displayThe_DOCGIA(Tree t, bool isSort){
-	system("color f0");
+void displayThe_DOCGIA(Tree t, int &RowTable){
 	if(t == NULL)
 		return;
+	system("color f0");
+	cls(5, 36, 49, 80); // cls table right
 		
-	SetColor(3);
-	int x = 0, row = soLuongDocGia == 1 ? 6 : 7, y = 0;
-	DocGia* a = new DocGia[soLuongDocGia];
-	ChuyenCayThanhMang(t, a, x); // Tree -> Array
-	if(isSort)
-		BubleSort_DOCGIA(a);
+	int x = 0, row = 6;
+	DocGia* arr = new DocGia[soLuongDocGia];
+	TreeToArray(t, arr, x); // Tree -> Array
 		
 	for(int i=0; i<soLuongDocGia; i++){
-		y = row + i;
+//		50 62 92 110 121
+		if(arr[i].maThe != maThe){
+			gotoxy(50, row);
+			cout << arr[i].maThe;
+			gotoxy(62, row);
+			cout << arr[i].ho;
+			gotoxy(92, row);
+			cout << arr[i].ten;
 
-		gotoxy(50, y);
-		cout << a[i].maThe;
-		gotoxy(65, y);
-		cout << a[i].ho;
-		gotoxy(82, y);
-		cout << a[i].ten;
+			gotoxy(110, row);
+			cout << "       ";
+			gotoxy(110, row);
+			cout << arr[i].phai;
+			gotoxy(121, row);
 
-		gotoxy(99, y);
-		cout << "       ";
-		gotoxy(99, y);
-		cout << a[i].phai;
-		gotoxy(116, y);
+			if(arr[i].trangThai == 0)
+				cout << "Hoat Dong";
+			else{
+				SetColor(12);
+				cout << "Bi Khoa";
+			}
+			row++;
 
-		if(a[i].trangThai == 0)
-			cout << "Hoat Dong";
-		else{
-			SetColor(12);
-			cout << "Bi Khoa";
 		}
 	}
 	
 }
+
+void displayEdit_DOCGIA(int SortBy, DocGia *arr){
+	if(arr == NULL)
+		return;
+	system("color f0");
+	cls(7, 36, 49, 80); // cls table right
+	int x = 0, row = 6;
+
+	// 0: Sort by Name, 1: Sort by ID
+	SortBy == 0 ? SortByName_DOCGIA(arr) : SortByID_DOCGIA(arr);
+
+	for(int i=0; i<soLuongDocGia; i++){
+//		50 62 92 110 121
+		if(arr[i].maThe != maThe){
+			gotoxy(50, row);
+			cout << arr[i].maThe;
+			gotoxy(62, row);
+			cout << arr[i].ho;
+			gotoxy(92, row);
+			cout << arr[i].ten;
+
+			gotoxy(110, row);
+			cout << "       ";
+			gotoxy(110, row);
+			cout << arr[i].phai;
+			gotoxy(121, row);
+
+			if(arr[i].trangThai == 0)
+				cout << "Hoat Dong";
+			else{
+				SetColor(12);
+				cout << "Bi Khoa";
+			}
+			row++;
+		}
+	}
+
+}
+
+//void Search_DOCGIA(Tree t, int MaThe, DocGia &dg){
+//	if(t == NULL)
+//		return;
+//		
+//	if (t->info.maThe == MaThe){
+//		dg = t->info; return;
+//	}
+//	else{
+//		if (MaThe > t->info.maThe)
+//			Search_DOCGIA(t->pRight, MaThe, dg);
+//			
+//		if (MaThe < t->info.maThe)
+//			Search_DOCGIA(t->pLeft, MaThe, dg);
+//	}
+//}
 
 //int Count_Node_Tree(Tree &root){
 //	int count = 0;
@@ -731,7 +1019,7 @@ void displayThe_DOCGIA(Tree t, bool isSort){
 //	 return count;
 //}
 
-string Sex(){
+string Sex(int y){
 	ShowConsoleCursor(false);
 	char input, arr[2][10] = {
 		"Nam",
@@ -740,18 +1028,18 @@ string Sex(){
 	int chon = 0, step = 20;
 	reset:
 		step = 20;
-	for(int i=0; i<2; i++){
-		gotoxy(step, 14);
-		if(i == chon){
-			SetColor(12);
-			cout << arr[i];
+		for(int i=0; i<2; i++){
+			gotoxy(step, y);
+			if(i == chon){
+				SetColor(12);
+				cout << arr[i];
+			}
+			else{
+				SetColor(3);
+				cout << arr[i];
+			}
+			step += 16;
 		}
-		else{
-			SetColor(3);
-			cout << arr[i];
-		}
-		step += 16;
-	}
 	
 	while(1){
 		input = getch();
@@ -772,42 +1060,44 @@ string Sex(){
 	}
 }
 
-bool AddDocGia(Tree &t, int ID, int &RowTable){
-	int x = 50 , count = 2, step = 50;
-	string tempInput;
 
-	ShowConsoleCursor(true);
-	DrawBorder(1, 3, 45, 35, 0); // draw border left
-	DrawBorder(48, 3, 82, 35, 0); // draw border right
 
-	gotoxy(17, count + 3);
-	cout << "                       ";
-	gotoxy(17, count + 6);
-	cout << "                       ";
-	gotoxy(17, count + 9);
-	cout << "                       ";
-	gotoxy(17, count + 12);
-	cout << "                       ";
+void HeaderTable_DOCGIA(int row){
+	char menu[5][20] = {
+		"ID",
+		"Ho",
+		"Ten",
+		"Phai",
+		"Trang Thai"
+	};
+//	50 62 92 110 121
+	gotoxy(50, row); 
+	cout << menu[0]; // Ma doc gia
+	gotoxy(62, row);
+	cout << menu[1]; // Ho
+	gotoxy(92, row);
+	cout << menu[2]; // Ten
+	gotoxy(110, row);
+	cout << menu[3]; // Phai
+	gotoxy(121, row);
+	cout << menu[4]; // Trang thai
+	SetColor(12);
+}
 
-	// cls bottom
-	cls(15, 20, 3, 34);
-	// Reset global var
-//	firstName = "";
+void AddDocGia(Tree &t, int ID, int &RowTable, bool &isExit){
+	int x = 50 , count = 2, RowHeader = 4;
+	cout << "Thuancute" << soLuongDocGia;
+	DrawBorder(1, 3, 45, 35, 0);  // draw border left
+	DrawBorder(48, 3, 84, 35, 0); // draw border right
+
+	cls(4, 20, 3, 43); // cls bottom
 
 	if(t == NULL) {
 		CAYNHIPHANTK_TheDocGia* p = new CAYNHIPHANTK_TheDocGia;
 		p->info.maThe = ID;
 
-		// handle input
 		while(1){
-			char menu[5][20] = {
-				"Ma Doc Gia",
-				"Ho",
-				"Ten",
-				"Phai(Nam/Nu)",
-				"Trang Thai"
-			};
-			
+			ShowConsoleCursor(false);
 			// Display new row in table
 			SetColor(3);
 			if(firstName.length() != 0){ // global var
@@ -817,50 +1107,34 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 				gotoxy(50, RowTable - 1);
 				cout << maThe;
 
-				gotoxy(65, RowTable - 1);
+				gotoxy(62, RowTable - 1);
 				cout << "             ";
-				gotoxy(65, RowTable - 1);
+				gotoxy(62, RowTable - 1);
 				cout << firstName;
 
-				gotoxy(82, RowTable - 1);
+				gotoxy(92, RowTable - 1);
 				cout << "             ";
-				gotoxy(82, RowTable - 1);
+				gotoxy(92, RowTable - 1);
 				cout << lastName;
 
-				gotoxy(99, RowTable - 1);
+				gotoxy(110, RowTable - 1);
 				cout << "       ";
-				gotoxy(99, RowTable - 1);
+				gotoxy(110, RowTable - 1);
 				cout << SexTable;
 
-				gotoxy(116, RowTable - 1);
+				gotoxy(121, RowTable - 1);
 				cout << "       ";
-				gotoxy(116, RowTable - 1);
+				gotoxy(121, RowTable - 1);
 				cout << "Hoat Dong";
 			}
 			// End display new row in table
-			SetColor(0);
 			
 			SetColor(12);
-			for(int i=0; i<5; i++){
-				gotoxy(step, 4);
-				if(i == 0)
-					step += 15;
-				else
-					step += 17;
-				cout << menu[i];
-			}
+			HeaderTable_DOCGIA(RowHeader);
 
 			SetColor(12);
 			gotoxy(3, 5);
 			cout << "Ma Doc Gia";
-
-			DrawBorder(16, count + 2, 27, 2, 3);
-			gotoxy(27, 5);
-			SetColor(3);
-			cout << p->info.maThe;
-
-			gotoxy(17, count + 3);
-			SetColor(12);
 			gotoxy(3, count + 6);
 			cout << "Ho";
 			gotoxy(3, count + 9);
@@ -868,34 +1142,26 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 			gotoxy(3, count + 12);
 			cout << "Phai(Nam/Nu)";
 
-			// Ho
-			DrawBorder(16, count + 5, 27, 2, 3);
-			// Ten
-			DrawBorder(16, count + 8, 27, 2, 3);
-			// Gioi Tinh
-			DrawBorder(16, count + 11, 27, 2, 3);
-
-			// Ho
-			InputHo:
+			DrawBorder(16, count + 2, 27, 2, 3); // ID
+			DrawBorder(16, count + 5, 27, 2, 3); // Ho
+			DrawBorder(16, count + 8, 27, 2, 3); // Ten
+			DrawBorder(16, count + 11, 27, 2, 3); // Gioi Tinh
+			
+			gotoxy(27, 5);
+			SetColor(3);
+			cout << p->info.maThe;
+			
 			SetColor(3);
 			gotoxy(17, count + 6);
-			p->info.ho = EditValue("", false, 17, 8, false);
-			
+			p->info.ho = EditValue("", false, 17, 8, false); // Ho
 			CapsLock(p->info.ho, 17, 8);
-			if(p->info.ho.length() == 0)
-				goto InputHo;
 
-			// Ten
-			InputTen:
 			gotoxy(17, count + 9);
-			p->info.ten = EditValue("", false, 17, 11, true);
+			p->info.ten = EditValue("", false, 17, 11, true); // Ten
 			CapsLock(p->info.ten, 17, 11);
-			if(p->info.ten.length() == 0)
-				goto InputTen;
 				
-			// Phai
 			gotoxy(17, count + 12);
-			p->info.phai = Sex();
+			p->info.phai = Sex(14); // Phai
 			gotoxy(20, 14);
 			cout << "                     ";
 			gotoxy(28, 14);
@@ -914,8 +1180,7 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 			maThe = ID;
 
 			// edit before add(Ho & Ten)
-			char input;
-			bool exit = true;
+			char input, exit;
 			int chon = 3, step;
 			
 			// reset edit input
@@ -935,12 +1200,14 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 								case 0:
 									p->info.ho = EditValue(p->info.ho, false, 17, 8, false);
 									CapsLock(p->info.ho, 17, 8);
+									firstName = p->info.ho; // global var
 									ShowConsoleCursor(false);
 									break;
 									
 								case 1:
 									p->info.ten = EditValue(p->info.ten, false, 17, 11, true);
 									CapsLock(p->info.ten, 17, 11);
+									lastName = p->info.ten; // global var
 									ShowConsoleCursor(false);
 									break;
 									
@@ -949,7 +1216,8 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 									gotoxy(20, 14);
 									cout << "                    ";
 									DrawBorder(16, count + 11, 27, 2, 3);
-									p->info.phai = Sex();
+									p->info.phai = Sex(14);
+									SexTable = p->info.phai; // global var
 									SetColor(3);
 									gotoxy(20, 14);
 									cout << "                    ";
@@ -967,6 +1235,11 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 				step += 3;
 			}
 			
+			SetColor(3);
+			gotoxy(14, 17);
+			cout << "An F1 De Luu!";
+			gotoxy(12, 18);
+			cout << "An ESC De Thoat!";
 			while(1){
 				input = getch();
 				switch(input){
@@ -984,69 +1257,67 @@ bool AddDocGia(Tree &t, int ID, int &RowTable){
 						}
 						break;
 						
-					case Enter:
-						// Add node tree
+						
+					case F1: // Case Add
 						t = p;
 						
-						// Display new row in table
 						SetColor(12);
 						gotoxy(50, RowTable);
 						cout << "             ";
 						gotoxy(50, RowTable);
 						cout << p->info.maThe;
-						
-						gotoxy(65, RowTable);
+
+						gotoxy(62, RowTable);
 						cout << "             ";
-						gotoxy(65, RowTable);
+						gotoxy(62, RowTable);
 						cout << p->info.ho;
-						
-						gotoxy(82, RowTable);
+
+						gotoxy(92, RowTable);
 						cout << "             ";
-						gotoxy(82, RowTable);
+						gotoxy(92, RowTable);
 						cout << p->info.ten;
 
-						gotoxy(99, RowTable);
+						gotoxy(110, RowTable);
 						cout << "       ";
-						gotoxy(99, RowTable);
+						gotoxy(110, RowTable);
 						cout << p->info.phai;
-						
-						gotoxy(116, RowTable);
+
+						gotoxy(121, RowTable);
 						cout << "       ";
-						gotoxy(116, RowTable);
+						gotoxy(121, RowTable);
 						cout << "Hoat Dong";
 						// End display new row in table
-
-						SetColor(3);
-						gotoxy(14, 17);
-						cout << "An ENTER De Tiep Tuc.";
-						gotoxy(12, 18);
-						cout << "An Phim Bat Ki De Thoat!";
-
-						if(char exit = getch() == Enter){
-							if(RowTable + 1 < 30)
-								RowTable++;
-							else{
-								RowTable = 6;
-								// cls table
-								cls(4, 34, 49, 80);
-							}
-							return true;
+						
+						if(RowTable + 1 < 37) // Max row table right: 37, cls right: cls(5, 36, 49, 80);
+							RowTable++;
+						else{
+							RowTable = 7;
+							firstName = "";
+							cls(5, 36, 49, 80); // cls table right
 						}
-						else
-							return false;
-
+						
+						isExit = true;
+						return;
+						
+					case Esc:
+						isExit = false;
+						return;
+						
 				}
 			}
 			// end edit before add(Ho & Ten)
 
 		}
 		// end handle input
-		
+
 	}
-	else if (t->info.maThe > ID)
-		AddDocGia(t->pLeft, ID, RowTable);
-	else if(t->info.maThe < ID)
-		AddDocGia(t->pRight, ID, RowTable);
+	else{
+		if (t->info.maThe > ID)
+			AddDocGia(t->pLeft, ID, RowTable, isExit);
+			
+		if(t->info.maThe < ID)
+			AddDocGia(t->pRight, ID, RowTable, isExit);
+	}
 
 }
 
@@ -1107,11 +1378,235 @@ void XoaDocGia(Tree& t, int x){
 	cout << "Xoa doc gia thanh cong";
 }
 
+// Case Edit DOC GIA
+string TrimSpace(string str){
+	string res;
+	for(int i=0; i<str.length(); i++)
+		if(str[i] != ' ')
+			res += str[i];
+	return res;
+}
+
+string UnCapsLock(string str){
+	string res = TrimSpace(str);
+
+	for(int i=0; i<res.length(); i++)
+		if(res[i] >= 65 && res[i] <= 90)
+			res[i] += 32;
+
+	return res;
+}
+
+bool Include(string str, string key){
+	string SubStr, tempStr, tempKey;
+	
+	tempStr = UnCapsLock(str);
+	tempKey = UnCapsLock(key);
+
+	for(int i=0; i<tempStr.length(); i++){
+		SubStr = tempStr.substr(i, key.length());
+
+		if(SubStr == tempKey)
+			return true;
+	}
+
+	return false;
+}
+
+void Search_DOCGIA(DocGia *arr, string InputValue, int &CountSearch, bool &isSearch){
+	isSearch = true;
+	int row = 9, count = 0;
+	
+	for(int i=0; i<soLuongDocGia; i++)
+		if(Include(arr[i].ten, InputValue))
+			count++;
+	
+	DocGia *res = new DocGia[count];
+	
+	count = 0;
+	for(int i=0; i<soLuongDocGia; i++){
+		if(Include(arr[i].ten, InputValue)){
+			res[count] = arr[i];
+			count++;
+		}
+	}
+	
+	gotoxy(3, 3);
+	CountSearch = count;
+	arr = res;
+}
+
+void Edit_DOCGIA(Tree &t, int RowTableEdit){
+	if(t == NULL)
+		return;
+		
+	int count = 5, CurrentRow = 6, sizeArr = 0, row = 6, indexArr = 0;
+	char input;
+	string InputValue = "", SortName = "Name";
+	
+	cls(5, 36, 49, 80); // cls table right
+	
+	DrawBorder(1, 6, 45, 32, 0);  // draw border left
+	DrawBorder(48, 6, 84, 32, 0); // draw border right
+	
+	DrawBorder(1, 3, 131, 2, 3); // Draw border search
+
+	SetColor(0);
+	gotoxy(3, 4);
+	cout << "Tim Doc Gia Theo Ten(F1)"; // -59
+	
+	DrawBorder(16, count + 2, 27, 2, 3); // ID
+	DrawBorder(16, count + 5, 27, 2, 3); // Ho
+	DrawBorder(16, count + 8, 27, 2, 3); // Ten
+	DrawBorder(16, count + 11, 27, 2, 3); // Gioi Tinh
+	
+	int RowHeader = 7;
+	HeaderTable_DOCGIA(RowHeader);
+	gotoxy(50, 6);
+	
+	DocGia* arr = new DocGia[soLuongDocGia];
+	TreeToArray(t, arr, sizeArr); // Tree -> Array
+
+	SortByName_DOCGIA(arr);
+	
+	int SortBy = 0, countSearch = 0; // Default Sort By Name
+	bool isSearch = false;
+	
+	while(1){
+		cls(8, 30, 49, 82); // cls table right
+		row = 9;
+		countSearch = 0;
+		
+		SetColor(12);
+		gotoxy(3, count + 3);
+		cout << "Ma Doc Gia";
+		gotoxy(3, count + 6);
+		cout << "Ho";
+		gotoxy(3, count + 9);
+		cout << "Ten";
+		gotoxy(3, count + 12);
+		cout << "Phai(Nam/Nu)";
+		
+		gotoxy(50, 8);
+		SetColor(3);
+		cout << "Sort By " << SortName;
+
+		HeaderTable_DOCGIA(RowHeader);
+		
+		for(int i=0; i<soLuongDocGia; i++){
+			i == indexArr ? SetColor(3) : SetColor(0);
+			
+			if((Include(arr[i].ten, InputValue) || Include(arr[i].ho, InputValue)))
+				countSearch++;
+			
+			if(isSearch ? (Include(arr[i].ten, InputValue) || Include(arr[i].ho, InputValue)) : true){
+				gotoxy(50, row);
+				cout << arr[i].maThe;
+
+				gotoxy(62, row);
+				cout << arr[i].ho;
+
+				gotoxy(92, row);
+				cout << arr[i].ten;
+
+				gotoxy(110, row);
+				cout << "       ";
+
+				gotoxy(110, row);
+				cout << arr[i].phai;
+				gotoxy(121, row);
+
+				if(arr[i].trangThai == 0)
+					cout << "Hoat Dong";
+				else{
+					SetColor(12);
+					cout << "Bi Khoa";
+				}
+				row++;
+			}
+		}
+		
+		DrawBorder(1, 3, 131, 2, 3); // Draw border search
+
+		input = getch();
+		switch(input){
+			case Up:
+				if(indexArr - 1 >= 0)
+					indexArr--;
+
+				break;
+				
+			case Down:
+				if(isSearch)
+					if(indexArr + 1 < countSearch)
+						indexArr++;
+						
+				if(!isSearch)
+					if(indexArr + 1 < soLuongDocGia)
+						indexArr++;
+
+				break;
+				
+			case Enter:
+				SetColor(3);
+				gotoxy(27, count + 3); // count = 5
+				cout << arr[indexArr].maThe;
+				gotoxy(17, count + 6);
+				cout << arr[indexArr].ho;
+				gotoxy(17, count + 9);
+				cout << arr[indexArr].ten;
+				gotoxy(17, count + 12);
+				cout << "                     ";
+				gotoxy(28, count + 12);
+				cout << arr[indexArr].phai;
+
+				EditValue(arr[indexArr].ho, false, 17, 11, false);
+				EditValue(arr[indexArr].ten, false, 17, 14, true);
+				
+				gotoxy(17, 17);
+				cout << "                     ";
+				arr[indexArr].phai = Sex(17);
+				gotoxy(17, 17);
+				cout << "                     ";
+				gotoxy(28, 17);
+				cout << arr[indexArr].phai;
+
+				break;
+
+			// Case search DOC GIA
+			case F1:
+				gotoxy(3, 4);
+				cout << "                                   ";
+				gotoxy(3, 4);
+				SetColor(0);
+				isSearch = true;
+				InputValue = EditValue("", false, 3 , 4, true);
+				ShowConsoleCursor(false);
+				break;
+				
+			case F2:
+				SortByName_DOCGIA(arr);
+				SortName = "Name";
+				break;
+				
+			case F3:
+				SortByID_DOCGIA(arr);
+				SortName = "ID";
+				break;
+				
+			case Esc:
+				return;
+		}
+	}
+}
+
+// End Case Edit DOC GIA
+
 /* KET THUC DOC GIA */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool login(){
- 	system("cls");
+	system("cls");
 	Normal();
 	char userName[100], passWord[40];
 	Draw_frame(X, Y);
@@ -1154,39 +1649,43 @@ bool login(){
 	}
 	return false;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* MENU VA CAC HAM LIEN QUAN*/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Cau a: them xoa sua THE DOC GIA
-void draw_case1(Tree t){
+void Menu_DOCGIA(Tree &t){
 	system("color f0");
 	ShowConsoleCursor(false);
-	int chon, res, arr[4] = {55, 57, 54, 61}, ISBN, RowTable = 6;
-	bool case1 = true, isSort = false;
+	int chon, res, arr[4] = {55, 54, 61}, ISBN, RowTable, RowTableEdit;
+	bool case1;
 	
 	while (1){
-		SetBGColor(3);
-		cls(3, 39, 1, 130);
-		chon = MenuThuancutee(CauA, 4, 0, 29, arr, 50);
-		SetBGColor(15);
+		cls(3, 39, 1, 134);
+		chon = MenuThuancutee(CauA, 3, 0, 29, arr, 50);
+
+		firstName = "";
+		maThe = NULL;
+		RowTable = 6 + soLuongDocGia;
+		RowTableEdit = 12 + soLuongDocGia;
+		case1 = true;
+		
 		switch (chon){
+		// Case Add DOC GIA
 		case 1:
 			cls(4, 30, 30, 50);
-  			while(case1 = AddDocGia(t, randomID(), RowTable)){
-					
-				if(case1 == false)
-					break;
-			}
+			displayThe_DOCGIA(t, RowTable);
+			while(case1)
+				AddDocGia(t, randomID(), RowTable, case1);
+
 			break;
+			
+		// Case Edit DOC GIA
 		case 2:
-//			displayThe_DOCGIA(t);
+			Edit_DOCGIA(t, RowTableEdit);
 			break;
 		case 3:
-			
-			break;
-		case 4:
 			return;
 		}
 		Sleep(300);
@@ -1194,30 +1693,36 @@ void draw_case1(Tree t){
 }
 
 // Cau c: NHap thong tin dau sach va danh ma sach tu dong
-void draw_case2(){
+void Menu_DAUSACH(){
 	DS_DAUSACH ds;
-	
 	system("color f0");
 	cls(4, 35, 2, 110);
-	int chon, flag = 1, arr[7] = {54, 57, 57, 59, 59, 55, 62};
+	int chon, flag = 1, arr[4] = {59, 55, 57, 62};
+	
+	char Case_DauSach[4][100] = {
+									"Them Dau Sach",
+									"Danh Sach Cac Dau Sach",
+									"Xoa Mot Dau Sach",
+									"Thoat!"
+								};
 
 	while (1){
-		chon = MenuThuancutee(CauC, 7, 0, 30, arr, 50);
-		switch (chon){
-		case 1:
-			system("cls");
-			NhapDSDS(ds);
-			break;
-		case 2:
-//			system("cls");
-//			SaveFile_DAUSACH(ds, "C:\\Users\\thuancutee\\Desktop\\DauSach.txt");
-//			displayDS_DAUSACH(ds);
-			break;
-		case 3:
-//			draw_case3();
-			break;
-		case 7:
-			return;
+		cls(3, 39, 1, 134);
+		chon = MenuThuancutee(Case_DauSach, 4, 0, 30, arr, 50);
+		switch(chon){
+			case 1:
+				system("cls");
+				NhapDSDS(ds);
+				break;
+			case 2:
+				
+//				displayDS_DAUSACH(ds);
+				break;
+			case 3:
+	//			draw_case3();
+				break;
+			case 7:
+				return;
 		}
 		Sleep(300);
    }
@@ -1240,12 +1745,12 @@ void exit(){
 		Sleep(50);
 	}
 	for(int i=8; i<36; i++){
-		gotoxy(0, i);
+		gotoxy(1, i);
 		cout << "           ";
 	}
 }
 
-void Menu(char td[][100], Tree t){
+void Menu(char td[][100], Tree &t){
 	system("color f0");
 	cls(4, 35, 2, 100);
 	int chon, arr[4] = {57, 58, 58, 61};
@@ -1253,15 +1758,17 @@ void Menu(char td[][100], Tree t){
 		chon = MenuThuancutee(td, 4, 5, 22, arr, 53);
 		switch (chon){
 		case 1:
-			draw_case1(t);
+			Menu_DOCGIA(t);
 			break;
+			
 		case 2:
-			draw_case2();
+			Menu_DAUSACH();
 			break;
+			
 		case 3:
-//			draw_case2();
+
 			break;
-		// case exit
+
 		case 4:
 			exit();
 			return;
@@ -1270,7 +1777,7 @@ void Menu(char td[][100], Tree t){
    }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv){
 	Normal();
@@ -1284,6 +1791,7 @@ int main(int argc, char **argv){
 
 //	if(login()){
 		InitTree(t);
+		FileToTree(t);
 		Menu(listMainMenu, t);
 //	}
 

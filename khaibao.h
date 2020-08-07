@@ -137,7 +137,7 @@ char listMainMenu[10][100] =  {
 								"Thoat!",
 								};
 
-char 	CauC[7][100] = 		{
+char 	Case_DauSach[7][100] = 		{
 							 "Nhap Danh Sach Dau Sach",
                              "Tim Kiem Dau Sach",
                              "Xoa Mot Dau Sach",
@@ -146,9 +146,8 @@ char 	CauC[7][100] = 		{
                              "Sap Xep Theo Ten Sach",
                              "Thoat!"};
 
-char 	CauA[8][100] = 		{
+char 	CauA[3][100] = 		{
 							 "Them The Doc Gia Moi",
-                             "Xoa The Doc Gia",
                              "Hieu Chinh The Doc Gia",
 							 "Thoat!",
 							 };
