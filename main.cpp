@@ -394,8 +394,8 @@ string RandomISBN(DS_DAUSACH &ds){
 //}
 
 
-void Traverser(DS_DANHMUCSACH* &head, int i, int &j){
-    for(ptrDMSach p = head->pHead; p != NULL; p = p->pNext){
+void Traverser(DS_DANHMUCSACH &head, int i, int &j){
+    for(ptrDMSach p = head.pHead; p != NULL; p = p->pNext){
     	gotoxy(i + 5, j);
     	cout<<p->data.maSach;
     	gotoxy(i + 25, j);
@@ -475,9 +475,9 @@ void displayDS_DAUSACH(DS_DAUSACH &ds){
 		gotoxy(arrX[5], 6 + i);
 		cout << ds.dausach[i]->theloai;
 		gotoxy(arrX[6], 6 + i);
-		cout<<ds.dausach[i]->DMS->SoLuong<<"\t\t";
+		cout<<ds.dausach[i]->DMS.SoLuong<<"\t\t";
 		gotoxy(arrX[7], 6 + i);
-		cout<<ds.dausach[i]->DMS->pHead->data.viTri<<endl;
+		cout<<ds.dausach[i]->DMS.pHead->data.viTri<<endl;
 	}
 }
 
@@ -532,13 +532,13 @@ ptrDMSach Newnode(DANH_MUC_SACH dms){
 	return p;
 }
 
-void InsertFirstDMS(DS_DANHMUCSACH* &list, ptrDMSach p){
-	if(list->pHead == NULL){
-		list->pHead = p;
+void InsertFirstDMS(DS_DANHMUCSACH &list, ptrDMSach p){
+	if(list.pHead == NULL){
+		list.pHead = p;
 	}
 	else{
-		p->pNext = list->pHead;
-		list->pHead = p;
+		p->pNext = list.pHead;
+		list.pHead = p;
 	}
 }
 
@@ -557,7 +557,7 @@ string random(){
 	return res;
 }
 
-void SinhMaSachTuDong(string isbn, int soLuong,DS_DANHMUCSACH* &dsDMS , string vtDau){
+void SinhMaSachTuDong(string isbn, int soLuong,DS_DANHMUCSACH &dsDMS , string vtDau){
 	srand(time(NULL));
 	DANH_MUC_SACH dms;
 	string masach;
@@ -570,7 +570,7 @@ void SinhMaSachTuDong(string isbn, int soLuong,DS_DANHMUCSACH* &dsDMS , string v
 		ptrDMSach p = Newnode(dms);
 		
 		InsertFirstDMS(dsDMS, p);
-		dsDMS->SoLuong++;
+		dsDMS.SoLuong++;
 		
 	}
 }
@@ -579,7 +579,7 @@ void SinhMaSachTuDong(string isbn, int soLuong,DS_DANHMUCSACH* &dsDMS , string v
 // ADD 1 CUON SACH
 bool NhapDauSach(DS_DAUSACH &ds, DAU_SACH &sach){
 	sach.ISBN = RandomISBN(ds);
-	DS_DANHMUCSACH* ds_dms;
+	DS_DANHMUCSACH ds_dms;
 	int x = 50, count = 2;
 	int SoLuong = 1;
 	string ViTriDau = "";
@@ -799,56 +799,39 @@ void XoaSach(DS_DAUSACH &ds, string ISBN, int index){
    }
 }
 
-void DeleteFirstDMS(DS_DANHMUCSACH* &head){
-	if (head->pHead == NULL){
+void XoaDau(DS_DANHMUCSACH &l){
+	if (l.pHead == NULL){
 		return;
 	}
-	ptrDMSach p = head->pHead;
-	head->pHead = head->pHead->pNext;
+	ptrDMSach p = l.pHead;
+	l.pHead = l.pHead->pNext;
 	delete p;
-//    if(head == NULL){
-//        printf("\nCha co gi de xoa het!");
-//    }else{
-//        head = head->pNext;
-//    }
-//    delete head;
 }
 
-//void DeleteLastDMS(ptrDMSach &head){
-//    if (head == NULL || head->pNext == NULL){
-//        DeleteFirstDMS(head);
-//    }
-//    ptrDMSach p = head;
-//    while(p->pNext->pNext != NULL){
-//        p = p->pNext;
-//    }
-//    p->pNext = p->pNext->pNext;
-//    delete head;
-//}
-
-bool XoaNodeCoKhoaBatKy(DS_DANHMUCSACH* &l, string masach){
-	if (l->pHead == NULL){
+bool XoaNodeCoKhoaBatKy(DS_DANHMUCSACH &l, string masach){
+	if (l.pHead == NULL){
 		return false;
 	}
-	if (l->pHead->data.maSach == masach){
-		DeleteFirstDMS(l);
+	if (l.pHead->data.maSach == masach){
+		XoaDau(l);
 		return true;
 	}
+
 	ptrDMSach g = new NODE_DanhMucSach;
-	for (ptrDMSach k = l->pHead; k != NULL; k = k->pNext){
+	for (ptrDMSach k = l.pHead; k != NULL; k = k->pNext){
 		if (k->data.maSach == masach){
 			g->pNext = k->pNext; 
-			delete k;	
+			delete k; 
 			return true;
 		}
-		g = k; 
+		g = k;
 	}
 
 }
 
 
 void XoaMaSachChuaMuon (DS_DAUSACH &ds){
-	DS_DANHMUCSACH* dsdms;
+	DS_DANHMUCSACH dsdms;
 	string masach;
 	int index = 0;
 	system("cls");
@@ -870,15 +853,19 @@ void XoaMaSachChuaMuon (DS_DAUSACH &ds){
 		}
 	}
 	if(XoaNodeCoKhoaBatKy(dsdms, masach)){
-		ds.dausach[index]->DMS->SoLuong--;
+		ds.dausach[index]->DMS.SoLuong--;
 		ds.dausach[index]->DMS = dsdms;
 		displayStr("Xoa Thanh Cong!", 50, 10);
 		Sleep(500);
 	}
+	
 //	for(NODE_DanhMucSach *d = dsdms.pHead; d != NULL ; d = d->pNext){
 //		if(d->data.maSach == masach){
 //			DeleteLastDMS(d);
-//			
+//			ds.dausach[index]->DMS.SoLuong--;
+//			ds.dausach[index]->DMS = dsdms;
+//			displayStr("Xoa Thanh Cong!", 50, 10);
+//			Sleep(500);
 //		}
 //	}
 }
@@ -1898,7 +1885,7 @@ void MuonSach_Them(Tree &t, DS_DAUSACH &dsds, NODE_DanhMucSach* &n_dms) {
 bool LayThongTinSach(DS_DAUSACH dsds, string masach, NODE_DanhMucSach *&n_dms, DAU_SACH *&ds){
 	for(int i = 0; i < dsds.soLuong; i++){
 		if(CatLayMaDauSach(masach) == dsds.dausach[i]->ISBN){
-			for(NODE_DanhMucSach* k = dsds.dausach[i]->DMS->pHead; k != NULL; k = k->pNext){
+			for(NODE_DanhMucSach* k = dsds.dausach[i]->DMS.pHead; k != NULL; k = k->pNext){
 				if(masach == k->data.maSach){
 					ds = dsds.dausach[i];
 					n_dms = k;
@@ -2071,9 +2058,9 @@ void XuatDauSach(int arrX[], DS_DAUSACH &ds){
 		gotoxy(arrX[5], 6 + i);
 		cout << ds.dausach[i]->theloai;
 		gotoxy(arrX[6], 6 + i);
-		cout<<ds.dausach[i]->DMS->SoLuong;
+		cout<<ds.dausach[i]->DMS.SoLuong;
 		gotoxy(arrX[7], 6 + i);
-		cout<<ds.dausach[i]->DMS->pHead->data.viTri;
+		cout<<ds.dausach[i]->DMS.pHead->data.viTri;
 			
 	}
 }
@@ -2121,9 +2108,9 @@ void XuatDSDauSach(DS_DAUSACH &ds){
 			gotoxy(arrX[5], 6 + i);
 			cout << ds.dausach[i]->theloai;
 			gotoxy(arrX[6], 6 + i);
-			cout<<ds.dausach[i]->DMS->SoLuong;
+			cout<<ds.dausach[i]->DMS.SoLuong;
 			gotoxy(arrX[7], 6 + i);
-			cout<<ds.dausach[i]->DMS->pHead->data.viTri;
+			cout<<ds.dausach[i]->DMS.pHead->data.viTri;
 				
 		}
 	getch();
