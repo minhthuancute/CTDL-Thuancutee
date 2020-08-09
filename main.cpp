@@ -853,7 +853,8 @@ void XoaMaSachChuaMuon (DS_DAUSACH &ds){
 		}
 	}
 	if(XoaNodeCoKhoaBatKy(dsdms, masach)){
-		ds.dausach[index]->DMS.SoLuong--;
+		dsdms.SoLuong--;
+//		ds.dausach[index]->DMS.SoLuong--;
 		ds.dausach[index]->DMS = dsdms;
 		displayStr("Xoa Thanh Cong!", 50, 10);
 		Sleep(500);
