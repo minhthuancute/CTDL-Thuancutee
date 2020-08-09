@@ -434,8 +434,7 @@ void displayDS_DANHMUCSACH(DS_DAUSACH &dsds){
 		cout << menu[i];
 	}
 	for(int i = 0; i < dsds.soLuong; i++){
-//		Traverser(dsds.dausach[i]->DMS, 48, count);
-//		cout<<"count: "<<count<<"~~";
+		Traverser(dsds.dausach[i]->DMS, 48, count);
 		count += i;
 	}
 }
@@ -479,7 +478,6 @@ void displayDS_DAUSACH(DS_DAUSACH &ds){
 		cout<<ds.dausach[i]->DMS.SoLuong<<"\t\t";
 		gotoxy(arrX[7], 6 + i);
 		cout<<ds.dausach[i]->DMS.pHead->data.viTri<<endl;
-		cout<<ds.dausach[i]->DMS.pHead->data.maSach<<endl;
 	}
 }
 
@@ -2100,40 +2098,6 @@ void XuatDSDauSach(DS_DAUSACH &ds){
 			cout<<ds.dausach[i]->DMS.pHead->data.viTri;
 				
 		}
-//		gotoxy(1, 6);
-//		y = wherey();
-//		gotoxy(1,1);
-//		cout<<"~~"<<y<<"~~";
-//		input = getch();
-//		if (input == -32) input = getch();
-//		cout<<"~~"<<input<<"~~";
-//		switch(input){
-//			case Up:
-//				if(y > 6){
-//	              	gotoxy(1, y);
-//					SetColor(0);
-//	              	y--;
-//	              	gotoxy(1, y);
-//				} 
-//				break;
-//				
-//			case Down:
-//				if (y+1 < ds.soLuong+6){
-//	              	gotoxy(1, y);
-//					SetColor(0);
-//	              	y++;
-//	              	gotoxy(1, y);
-//	  			}
-//				break;
-//				
-//			case Enter:
-//				
-//				break;
-//			case Esc:
-//				return;
-//		}
-//	}
-
 	getch();
 }
 
