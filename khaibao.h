@@ -23,7 +23,7 @@
 #pragma warning (disable:6262)
 
 using namespace std;
-
+//	int	soLuongDocGia = 0;
 //int pointer = 10;
 //int toadoXBox = 65;
 //int toadoYBox = 9;
@@ -41,17 +41,21 @@ struct DANH_MUC_SACH{
 	string maSach;
 	string viTri;//hang-ke
 	int trangThai;//0: cho muon duoc, 1: da co doc gia muon, 2: sach da thanh ly
-	
-	//pointer
-	DANH_MUC_SACH* pNext;
 };
+
+struct NODE_DanhMucSach
+{
+	DANH_MUC_SACH data;
+	NODE_DanhMucSach* pNext;
+};
+typedef struct NODE_DanhMucSach* ptrDMSach;
 
 struct DS_DANHMUCSACH{
 	int SoLuong = 0;
-	DANH_MUC_SACH* pHead = NULL;
+	NODE_DanhMucSach* pHead = NULL;
 };
 
-typedef struct DS_DANHMUCSACH* PTR_DMS;
+//typedef struct DS_DANHMUCSACH* PTR_DMS;
 
 //__________DAU SACH_____________
 // su dung danh sach tuyen tinh la 1 mang con tro
@@ -77,9 +81,10 @@ struct DAU_SACH{
 	int NXB; //nam xuat ban
 
 	int demSoLanMuon;//cau j
+	
 	string theloai;
 	//	char theloai[50];
-	DS_DANHMUCSACH *DMS;//Con tro se tro den cac dau sach tuong ung
+	DS_DANHMUCSACH DMS;//Con tro se tro den cac dau sach tuong ung
 };
 
 struct DS_DAUSACH{
@@ -91,8 +96,8 @@ struct DS_DAUSACH{
 // Su dung danh sach lien ket kep
 struct MUON_TRA{
 	string maSach;
-	DATE NgayMuon;
-	DATE NgayTra;
+	Date NgayMuon;
+	Date NgayTra;
 	int trangThai;//0: la sach ddang muon, 1: la sach da tra, 2: lam mat sach
 };
 
@@ -101,6 +106,7 @@ struct NODE_MUONTRA{
 	NODE_MUONTRA* pLeft;
 	NODE_MUONTRA* pRight;
 };
+typedef struct NODE_MUONTRA* ptrMuonTra;
 
 struct DS_MUONTRA{
 	NODE_MUONTRA* pHead;
@@ -115,14 +121,15 @@ struct DocGia{
 	string ten;
 	string phai = "Nam";
 	int trangThai;
+	int slSachDangMuon;
 	//	DS_MuonTra DS_muontra;
-	DS_MUONTRA *DS_MUONTRA;
+	DS_MUONTRA DS_MUONTRA;
 };
 
 struct CAYNHIPHANTK_TheDocGia{
 	DocGia info;
 
-	int	soLuongDocGia = 0;
+
 	CAYNHIPHANTK_TheDocGia* pLeft;
 	CAYNHIPHANTK_TheDocGia* pRight;
 };
@@ -146,9 +153,17 @@ char 	Case_DauSach[7][100] = 		{
                              "Sap Xep Theo Ten Sach",
                              "Thoat!"};
 
-char 	CauA[3][100] = 		{
+char 	CauA[4][100] = 		{
 							 "Them The Doc Gia Moi",
                              "Hieu Chinh The Doc Gia",
+							 "Xoa The Doc Gia",
 							 "Thoat!",
 							 };
+char 	CauF[4][100] = 		{
+							 "Muon Sach",
+                             "Tra Sach",
+                             "Danh Sach Muon & Tra Sach",
+							 "Thoat!",
+							 };
+							 
                              
