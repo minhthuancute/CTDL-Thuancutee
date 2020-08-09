@@ -23,10 +23,6 @@
 #pragma warning (disable:6262)
 
 using namespace std;
-//	int	soLuongDocGia = 0;
-//int pointer = 10;
-//int toadoXBox = 65;
-//int toadoYBox = 9;
 
 struct Date{
 	int Ngay;
@@ -83,7 +79,6 @@ struct DAU_SACH{
 	int demSoLanMuon;//cau j
 	
 	string theloai;
-	//	char theloai[50];
 	DS_DANHMUCSACH DMS;//Con tro se tro den cac dau sach tuong ung
 };
 
