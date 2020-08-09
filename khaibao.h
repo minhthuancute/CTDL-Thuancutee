@@ -79,7 +79,7 @@ struct DAU_SACH{
 	int demSoLanMuon;//cau j
 	
 	string theloai;
-	DS_DANHMUCSACH DMS;//Con tro se tro den cac dau sach tuong ung
+	DS_DANHMUCSACH* DMS;//Con tro se tro den cac dau sach tuong ung
 };
 
 struct DS_DAUSACH{
