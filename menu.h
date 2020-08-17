@@ -10,23 +10,17 @@ int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[
 	hidecursor();
 	Draw_frame();
 	int chon = 0;
-	cls(4, 35, 2, 110);
+	//cls(4, 35, 2, 110);
 	reset:
 		int step = 6;
 		for (int i=0; i<size; i++){
+			i == chon ? DrawBorder(x, step, width, 2, 12) : DrawBorder(x, step, width, 2, 3);
+			i == chon ? SetColor(12) : SetColor(3);
 
-	  		if(i == chon){
-				SetColor(12);
-				DrawBorder(x, step, width, 2, 12);
-				gotoxy(arr[i], step+1);
-				cout << td[i];
-			}
-			else{
-				SetColor(3);
-				DrawBorder(x, step, width, 2, 3);
-				gotoxy(arr[i], step+1);
-				cout << td[i];
-			}
+			gotoxy(60, step + 1);
+			cout << "                          ";
+			gotoxy(arr[i], step + 1);
+			cout << td[i];
 			step += 4;
 		}
 		
@@ -38,7 +32,7 @@ int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[
 	do{
 		input = getch();
 		if(input == -32)
-		input = getch();
+			input = getch();
 
 		SetColor(0);
 		switch (input){
@@ -61,5 +55,4 @@ int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[
 
 	} while(1);
 }
-
 

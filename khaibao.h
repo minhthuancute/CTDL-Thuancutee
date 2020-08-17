@@ -76,10 +76,10 @@ struct DAU_SACH{
 	int sotrang;
 	int NXB; //nam xuat ban
 
-	int demSoLanMuon;//cau j
+	int demSoLanMuon; //cau j
 	
 	string theloai;
-	DS_DANHMUCSACH DMS;//Con tro se tro den cac dau sach tuong ung
+	DS_DANHMUCSACH DMS; //Con tro se tro den cac dau sach tuong ung
 };
 
 struct DS_DAUSACH{
@@ -93,7 +93,7 @@ struct MUON_TRA{
 	string maSach;
 	Date NgayMuon;
 	Date NgayTra;
-	int trangThai;//0: la sach ddang muon, 1: la sach da tra, 2: lam mat sach
+	int trangThai; // 0: la sach dang muon, 1: la sach da tra, 2: lam mat sach
 };
 
 struct NODE_MUONTRA{
@@ -124,7 +124,6 @@ struct DocGia{
 struct CAYNHIPHANTK_TheDocGia{
 	DocGia info;
 
-
 	CAYNHIPHANTK_TheDocGia* pLeft;
 	CAYNHIPHANTK_TheDocGia* pRight;
 };
@@ -147,18 +146,3 @@ char 	Case_DauSach[7][100] = 		{
                              "Mo Danh Sach",
                              "Sap Xep Theo Ten Sach",
                              "Thoat!"};
-
-char 	CauA[4][100] = 		{
-							 "Them The Doc Gia Moi",
-                             "Hieu Chinh The Doc Gia",
-							 "Xoa The Doc Gia",
-							 "Thoat!",
-							 };
-char 	CauF[4][100] = 		{
-							 "Muon Sach",
-                             "Tra Sach",
-                             "Danh Sach Muon & Tra Sach",
-							 "Thoat!",
-							 };
-							 
-                             
