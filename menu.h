@@ -6,7 +6,7 @@ using namespace std;
 const int Up = 72;
 const int Down = 80;
 
-int MenuThuancutee(char td[][100], int size, int marginLeft, int width, int arr[], int x){
+int MenuThuancutee(char td[][100], int size, int width, int arr[], int x){
 	hidecursor();
 	Draw_frame();
 	int chon = 0;

@@ -131,18 +131,4 @@ struct CAYNHIPHANTK_TheDocGia{
 typedef CAYNHIPHANTK_TheDocGia* Tree;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-char listMainMenu[10][100] =  {
-								"Quan Ly Doc Gia",
-								"Quan Ly Sach",
-								"Muon Tra Sach",
-								"Thoat!",
-								};
 
-char 	Case_DauSach[7][100] = 		{
-							 "Nhap Danh Sach Dau Sach",
-                             "Tim Kiem Dau Sach",
-                             "Xoa Mot Dau Sach",
-                             "Ghi Danh Sach",
-                             "Mo Danh Sach",
-                             "Sap Xep Theo Ten Sach",
-                             "Thoat!"};
