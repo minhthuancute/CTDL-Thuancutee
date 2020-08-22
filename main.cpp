@@ -681,12 +681,24 @@ void LoadFile_DAUSACH(DS_DAUSACH &dsds){
 	FileIn.close();
 }
 
-string FindName_DAUSACH(DS_DAUSACH &ds, string ID){
-	for(int i=0; i<ds.soLuong; i++)
-		if(ds.dausach[i]->ISBN == ID)
-			return ds.dausach[i]->tensach;
-	return "";
+bool FindID_DAUSACH(DS_DAUSACH &ds, string ID){
+	DS_DANHMUCSACH dsdms;
+	for(int i=0; i<ds.soLuong; i++){
+		dsdms = ds.dausach[i]->DMS;
+		for(ptrDMSach p = dsdms.pHead; p != NULL; p = p->pNext){
+			if(p->data.maSach == ID)
+				return true;
+		}
+	}
+	return false;
 }
+
+//string FindNameMuon_DAUSACH(DS_DAUSACH &ds, string ID){
+//	for(int i=0; i<ds.soLuong; i++)
+//		if(ds.dausach[i]->ISBN == ID)
+//			return ds.dausach[i]->tensach;
+//	return "";
+//}
 
 int CountFilter_DAUSACH(DS_DAUSACH &ds, string InputValue){
 	int count = 0;
@@ -777,7 +789,7 @@ void TableSelect_DAUSACH(DS_DAUSACH &ds, int start, int end, bool isSearch, bool
 
 void TableDisplay_DAUSACH(DS_DAUSACH &ds, int CurrentIndex){
 	DS_DANHMUCSACH dsdms;
-
+	cls(9, 36, 2, 145); // Cls Main Table
 	int row = 9, arrX[] = {3, 12, 25, 57, 88, 99, 107, 125, 138};
 	char input, menu[][20] = {
 		"ISBN",
@@ -816,7 +828,7 @@ void TableDisplay_DAUSACH(DS_DAUSACH &ds, int CurrentIndex){
 	cout << ds.dausach[CurrentIndex]->DMS.pHead->data.viTri;
 
 	dsdms = ds.dausach[CurrentIndex]->DMS;
-
+	SetColor(3);
 	for(ptrDMSach p = dsdms.pHead; p != NULL; p = p->pNext){
 		gotoxy(arrX[1], row);
 		p->data.trangThai == 0 ? SetColor(3) : SetColor(0);
@@ -825,7 +837,6 @@ void TableDisplay_DAUSACH(DS_DAUSACH &ds, int CurrentIndex){
 		cout << p->data.maSach;
 		row++;
 	}
-
 }
 
 void SearchByName_DAUSACH(DS_DAUSACH &ds){
@@ -2991,6 +3002,13 @@ void DisplayOne_DOCGIA(Tree &temp, int row, int *arrX){
 	}
 }
 
+string FindName_DAUSACH(DS_DAUSACH &ds, string ID){
+	for(int i=0; i<ds.soLuong; i++)
+		if(ds.dausach[i]->ISBN == ID)
+			return ds.dausach[i]->tensach;
+	return "";
+}
+
 void DisplaySachOf_DOCGIA(Tree &t,DS_DAUSACH &ds, int *arrX, int y){
 	SetColor(0);
 	string str;
@@ -3192,7 +3210,8 @@ InputID_DAUSACH:
 	cout << IDSach;
 //	SetColor(3);
 	IDSach = EditValue(IDSach, false, 4, 6, false, true, true); // 10 character
-	if(IDSach.length() != 10 || FindName_DAUSACH(ds, IDSach) == ""){
+	UpperCase(IDSach);
+	if(IDSach.length() != 10 || FindID_DAUSACH(ds, IDSach) == false){ // FindName_DAUSACH(ds, IDSach) == ""
 		SetColor(12);
 		gotoxy(4, 6);
 		cout << IDSach;
