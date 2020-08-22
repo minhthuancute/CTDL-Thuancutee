@@ -51,23 +51,6 @@ struct DS_DANHMUCSACH{
 	NODE_DanhMucSach* pHead = NULL;
 };
 
-//typedef struct DS_DANHMUCSACH* PTR_DMS;
-
-//__________DAU SACH_____________
-// su dung danh sach tuyen tinh la 1 mang con tro
-//struct DauSach
-//{
-//	string ISBN;
-//	string tenSach;
-//	string tacGia;
-//	int soTrang;
-//	int NXB; //nam
-//	string theLoai;
-//
-//	int demSoLanMuon;//cau j
-//
-//	DS_DanhMucSach DMS;
-//};
 struct DAU_SACH{
 	string ISBN; // ma sach quoc te
 
@@ -77,7 +60,7 @@ struct DAU_SACH{
 	int NXB; //nam xuat ban
 
 	int demSoLanMuon; //cau j
-	
+
 	string theloai;
 	DS_DANHMUCSACH DMS; //Con tro se tro den cac dau sach tuong ung
 };
@@ -116,8 +99,10 @@ struct DocGia{
 	string ten;
 	string phai = "Nam";
 	int trangThai;
+	int slSachMuon;
 	int slSachDangMuon;
-	//	DS_MuonTra DS_muontra;
+	int soNgayMuonQH;
+	
 	DS_MUONTRA DS_MUONTRA;
 };
 
@@ -131,4 +116,18 @@ struct CAYNHIPHANTK_TheDocGia{
 typedef CAYNHIPHANTK_TheDocGia* Tree;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char listMainMenu[10][100] =  {
+								"Quan Ly Doc Gia",
+								"Quan Ly Sach",
+								"Muon Tra Sach",
+								"Thoat!",
+								};
 
+char 	Case_DauSach[7][100] = 		{
+							 "Nhap Danh Sach Dau Sach",
+                             "Tim Kiem Dau Sach",
+                             "Xoa Mot Dau Sach",
+                             "Ghi Danh Sach",
+                             "Mo Danh Sach",
+                             "Sap Xep Theo Ten Sach",
+                             "Thoat!"};
