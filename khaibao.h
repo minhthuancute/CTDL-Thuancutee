@@ -12,7 +12,9 @@
 #include <typeinfo>
 #include <iomanip>
 #include <cstdlib>
-#include "HangSo.h"
+
+#define MAX_DAUSACH 100000 // 100k
+#define MAX_DOCGIA 10000 // 10k
 
 #pragma warning (disable:4996)
 #pragma warning (disable:4018)
@@ -67,7 +69,7 @@ struct DAU_SACH{
 
 struct DS_DAUSACH{
 	int soLuong = 0;
-	DAU_SACH* dausach[MAX_DAU_SACH];
+	DAU_SACH* dausach[MAX_DAUSACH];
 };
 
 //________MUON TRA___________

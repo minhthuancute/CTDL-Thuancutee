@@ -1179,11 +1179,10 @@ bool Add_DAUSACH(DS_DAUSACH &ds, DAU_SACH &sach){
 void AddList_DAUSACH(DS_DAUSACH &ds){
 	DAU_SACH sach;
 
-	if(ds.soLuong == MAX_DAU_SACH){
-		displayStr("Danh sach day!!", 50, 5); return;
-	}
+	if(ds.soLuong == MAX_DAUSACH)
+		return;
 
-	while(ds.soLuong < MAX_DAU_SACH){
+	while(ds.soLuong < MAX_DAUSACH){
 		ds.dausach[ds.soLuong] = new DAU_SACH;
 		bool temp = Add_DAUSACH(ds, sach);
 		*ds.dausach[ds.soLuong] = sach;
@@ -1192,7 +1191,7 @@ void AddList_DAUSACH(DS_DAUSACH &ds){
 		if(!temp)
 			break;
 	}
-	SaveFile_DAUSACH(ds); // error Save File ????
+	SaveFile_DAUSACH(ds);
 }
 
 // DELETE SACH THEO ISBN
@@ -1248,34 +1247,98 @@ bool XoaNodeCoKhoaBatKy(DS_DANHMUCSACH &l, string masach){
 
 }
 
-void XoaMaSachChuaMuon(DS_DAUSACH &ds){
-	DS_DANHMUCSACH dsdms;
-	string masach;
-	int index = 0;
-	system("cls");
-	DrawBorder(1, 3, 38, 35, 3); // Draw Table Left
-	DrawBorder(41, 3, 90, 35, 3); // Draw Table Right
-
-	gotoxy(2, 5);
-	cout << "Nhap ma sach can xoa :" ;
-	DrawBorder(2, 7, 30, 2, 3);
-	ShowConsoleCursor(true);
-	gotoxy(3, 8);
-	getline(cin, masach);
-	string isbn = CutID_DAUSACH(masach);
-
-	for(int i = 0; i<ds.soLuong; i++){
-		if(ds.dausach[i]->ISBN == isbn){
-			dsdms = ds.dausach[i]->DMS;
-			index = i;
+int CheckID_DAUSACH(DS_DAUSACH &DAUSACH, string ISBN, string maSach){
+	for(int i=0; i<DAUSACH.soLuong; i++){
+		if(DAUSACH.dausach[i]->ISBN == ISBN){
+			for(NODE_DanhMucSach *d = DAUSACH.dausach[i]->DMS.pHead; d != NULL; d = d->pNext){
+				if(d->data.maSach == maSach){
+					if(d->data.trangThai == 0)
+						return 1; // Da co ng muon
+					else
+						return 0; // Xoa duoc
+				}
+			}
 		}
 	}
+	return 2; // Ma sach kh ton tai
+}
 
-	if(XoaNodeCoKhoaBatKy(dsdms, masach)){
-		dsdms.SoLuong--;
-		ds.dausach[index]->DMS = dsdms;
-		displayStr("Xoa Thanh Cong!", 50, 10);
-		Sleep(300);
+void DeleteByID_DAUSACH(DS_DAUSACH &ds){
+	DS_DANHMUCSACH dsdms;
+	string maSach = "";
+	int index = 0, arrX[] = {38, 48, 72, 96, 106, 113, 129, 140}, row = 6;
+ID_DauSach:
+	gotoxy(2, 4);
+	SetColor(12);
+	cout << "Nhap ma sach can xoa";
+	DrawBorder(2, 5, 30, 2, 3);
+	gotoxy(80, 4);
+	cout << "                                                ";
+	gotoxy(3, 6);
+	SetColor(12);
+	cout << maSach;
+	maSach = EditValue(maSach, false, 3, 6, true, true, false);
+	ShowConsoleCursor(false);
+	string ISBN = CutID_DAUSACH(maSach);
+	UpperCase(maSach);
+	UpperCase(ISBN);
+	int check = CheckID_DAUSACH(ds, ISBN, maSach); // 1: co ng muon, 0: Xoa duoc, 2: Kh ton tai
+	if(check == 2){
+		goto ID_DauSach;
+	}
+	else if(check == 1){
+		cls(4, 8, 38, 110);
+		gotoxy(80, 4);
+		SetColor(12);
+		cout << "Sach Da Co Nguoi Muon";
+		Sleep(3000);
+		goto ID_DauSach;
+	}
+	else{
+		SetColor(3);
+		gotoxy(3, 8);
+		cout << "Enter: Xoa Sach";
+		gotoxy(3, 9);
+		cout << "Esc: Exit!";
+		
+		char input;
+		while(1){
+			input = getch();
+			switch(input){
+				case Enter: {
+					for(int i=0; i<ds.soLuong; i++){
+						if(ds.dausach[i]->ISBN == ISBN){
+							dsdms = ds.dausach[i]->DMS;
+							index = i;
+						}
+					}
+
+					if(XoaNodeCoKhoaBatKy(dsdms, maSach)){
+						dsdms.SoLuong--;
+						ds.dausach[index]->DMS = dsdms;
+						cls(4, 8, 38, 110);
+						gotoxy(83, 5);
+						SetColor(3);
+						cout << "Xoa Thanh Cong";
+						gotoxy(85, 6);
+						SetColor(12);
+						cout << "Esc: Exit";
+
+						while(1){
+							input = getch();
+							if(input == Esc)
+								cls(3, 38, 1, 148); // System Cls
+								return;
+						}
+					}
+					break;
+				}
+
+				case Esc:
+					cls(4, 37, 1, 148); // System Cls
+					return;
+			}
+		}
 	}
 }
 
@@ -1645,7 +1708,7 @@ void DocFileDocGia_Them(Tree &t, ifstream &FileIn, DocGia a, DS_DAUSACH &ds){
 void LoadFile_DOCGIA(Tree &t, DS_DAUSACH &ds){
 	ifstream FileIn;
 
-	DocGia a[10000];
+	DocGia a[10000]; // Define 10k User
 	int mathe = 0, i = 0;
 	FileIn.open("DocGia.txt", ios::in);
 
@@ -1686,6 +1749,17 @@ void TreeToArray(Tree t, DocGia a[], int &i){
 	TreeToArray(t->pLeft, a, i);
 	a[i++] = t->info;
 	TreeToArray(t->pRight, a, i);
+}
+
+bool CheckID_DOCGIA(Tree &t, int MaThe){
+	if(t == NULL) return false;
+	else if(t->info.maThe == MaThe)
+		return true;
+
+	if(MaThe > t->info.maThe)
+		CheckID_DOCGIA(t->pRight, MaThe);
+	else if(MaThe < t->info.maThe)
+		CheckID_DOCGIA(t->pLeft, MaThe);
 }
 
 bool Find_DOCGIA(Tree &t, int MaThe, Tree &temp){
@@ -1870,18 +1944,18 @@ bool Update_DOCGIA(Tree &t, int MaThe, DocGia *&arr, int lengthArr){
 
 }
 
-int RandomID(){
+int RandomID(Tree t){
 	string box = "0123456789";
-	char res[6];
+	string res;
 	srand(time(NULL));
 	for(int i=0; i<6; i++){
-		int indexRand = rand()% 10;
-		if(indexRand == 0 && i == 0)
-			indexRand = rand()% 9 + 1;
+		int indexRand = rand() % 10;
 		res[i] = box[indexRand];
 	}
-
-	return atoi(res);
+	if(CheckID_DOCGIA(t, StringToNumber(res)))
+		RandomID(t);
+	else
+		return StringToNumber(res);
 }
 
 // Quick sort DOC GIA
@@ -2071,6 +2145,8 @@ void DisplayRow_DOCGIA(int y, int *arrX, int ID, string firstName, string lastNa
 }
 
 void Add_DOCGIA(Tree &t, int ID, int &RowTable, bool &isExit){
+	if(soLuongDocGia == MAX_DOCGIA)
+		return;
 	if(t == NULL){
 		CAYNHIPHANTK_TheDocGia* p = new CAYNHIPHANTK_TheDocGia;
 		p->info.maThe = ID;
@@ -2313,36 +2389,6 @@ void XoaDocGia(Tree& t, int x){
 	}
 }
 
-
-// Case Edit DOC GIA
-//void Filter_DOCGIA(DocGia *&arr,DocGia *arrSource, int size, string InputValue){
-//	DocGia* temp = new DocGia[size];
-//	int count = 0;
-//	for(int i=0; i<soLuongDocGia; i++){
-//		if(Include(NumberToString(arrSource[i].maThe), InputValue)){
-//			temp[count] = arrSource[i];
-//			count++;
-//			if(count > size - 1)
-//				break;
-//		}
-//	}
-//	arr = temp;
-//}
-
-//void Filter_DOCGIA(DocGia *&arr,DocGia *arrSource, int size, int ID){
-//	DocGia* temp = new DocGia[size];
-//	int count = 0;
-//	for(int i=0; i<soLuongDocGia; i++){
-//		if(arrSource[i].maThe == ID)){
-//			temp[count] = arrSource[i];
-//			count++;
-//			if(count > size - 1)
-//				break;
-//		}
-//	}
-//	arr = temp;
-//}
-
 int CountFilter_DOCGIA(DocGia *arr, string InputValue){
 	int res = 0;
 	for(int i=0; i<soLuongDocGia; i++){
@@ -2511,20 +2557,28 @@ void Edit_DOCGIA(Tree &t){
 					InputValue = "";
 					gotoxy(36, 37);
 					cout << "              ";
-					char control[][50] = {
-						"F1:    Search Doc Gia",
-						"F2:    Continue Edit",
-						"F3:    Sort By ID",
-						"F4:    Sort By Name",
-						"Esc:   Exit!"
-					};
-					SetColor(3);
-					y = 30;
-					for(int i=0; i<5; i++){
-						gotoxy(3, y);
-						cout << control[i];
-						y++;
+					char menu[][50] = {
+					"Ma Doc Gia",
+					"Ho",
+					"Ten",
+					"Gioi Tinh",
+					"Trang Thai",
+					"F1:    Search By ID Doc Gia",
+					"F2:    Continue Edit",
+					"Esc:   Exit!"
+				};
+
+				SetColor(12);
+				y = 7;
+				for(int i=0; i<8; i++){
+					gotoxy(3, y);
+					cout << menu[i];
+					if(i == 4){
+						y ++;
+						SetColor(3);
 					}
+					i > 4 ? y++ : y += 4;
+				}
 					break;
 				}
 			ResetSearch:
@@ -2834,117 +2888,214 @@ void DisplayList_DOCGIA(Tree &t, DS_DAUSACH &ds){
 }
 // End Case Edit DOC GIA
 
-void XuatMang(DS_DAUSACH &dsds, DocGia a[], int sl, string msach[], int length){
-//	cout << dsds.dausach[0]->tensach;
-//	getch();
-	
-	DAU_SACH* dausach;
-	bool check = true;
-	
-//	maSX -> arraySort: string madg / masach / songaymuonquahan
-	string maSX[10000], tempStr = "";
-	int i = 0, j = 0, distance = 0, index = 0;
-	
-	while(i != sl){
-	Xuat:
-		cout << endl;
-		int mathe = StringToNumber(msach[j].substr(0, 6));
-		if(mathe == a[i].maThe){
-			tempStr = msach[j].substr(7);
-			j++;
-		}
-
-		for(NODE_MUONTRA *m = a[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight)
-			if(tempStr == m->info.maSach)
-				distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
-
-		maSX[index] = NumberToString(a[i].maThe) + "/" + tempStr + "/" + NumberToString(distance);
-		index++;
-		if(mathe != a[i].maThe)
-			i++;
-
-		if(j <= 3)
-			goto Xuat;
-	}
-
-	index = index - 1; // SL sach qua han
-	for(int i=0; i<index; i++){
-		for(int j=0; j<index - 1; j++){
-			if(StringToNumber(maSX[i].substr(18)) > StringToNumber(maSX[j].substr(18))){
-				tempStr = maSX[j];
-				maSX[j] = maSX[i];
-				maSX[i] =  tempStr;
-			}
-		}
-	}
-	for(int j=0; j<index; j++){
-		tempStr = maSX[j].substr(7, 17);
-		
-		for(int i=0; i<sl; i++){
-			for(NODE_MUONTRA *m = a[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight){
-				if(StringToNumber(maSX[j].substr(0, 6)) == a[i].maThe && m->info.maSach == tempStr){
-					gotoxy(5, j+10);
-					cout << a[i].maThe;
-					gotoxy(25, j+10);
-					cout << a[i].ho;
-					gotoxy(45, j+10);
-					cout << a[i].ten;
-					gotoxy(65, j+10);
-					cout << tempStr;
-
-					for(int i=0; i<dsds.soLuong; i++){ // Get Infor DAU SACH
-						if(CutID_DAUSACH(tempStr) == dsds.dausach[i]->ISBN){
-							for(NODE_DanhMucSach* k = dsds.dausach[i]->DMS.pHead; k != NULL; k = k->pNext){
-								if(tempStr == k->data.maSach)
-									dausach = dsds.dausach[i];
-							}
-						}
-					}
-					
-					gotoxy(85, j+10);
-					cout << dausach->tensach;
-					gotoxy(105, j+10);
-					cout << m->info.NgayMuon.Ngay <<"/" <<m->info.NgayMuon.Thang << "/" <<m->info.NgayMuon.Nam;
-					distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
-
-					gotoxy(125, j+10);
-					cout << distance;
+void GetInforSortQH_DAUSACH(DS_DAUSACH dsds, string masach, DAU_SACH* &ds){
+    for(int i=0; i<dsds.soLuong; i++){
+		if(CutID_DAUSACH(masach) == dsds.dausach[i]->ISBN){
+			for(NODE_DanhMucSach* k = dsds.dausach[i]->DMS.pHead; k != NULL; k = k->pNext){
+				if(masach == k->data.maSach){
+					ds = dsds.dausach[i];
+					return;
 				}
 			}
 		}
 	}
-
 }
 
-void InDanhSachMuonQH(Tree &t, DS_DAUSACH &dsds){
-//	Sl dg bi khoa
-	int i = 0, SL = 0, x = 0, distance = 0;
+string Cat7KyTuDau(string str){
+	string res;
+	for(int i = 7; i < str.length(); i++)
+		res += str[i];
 
-	DocGia a[soLuongDocGia], DGBiKhoa[soLuongDocGia];
-	TreeToArray(t, a, i);
+	return res;
+}
 
-	for(int i=0; i<soLuongDocGia; i++){ //	chuyen doc gia bi khoa vao mang
-		if(a[i].trangThai == 0){
-			DGBiKhoa[SL] = a[i];
-			SL++;
+string Cat18KyTuDau(string str){
+	string res;
+	for(int i = 18; i < str.length(); i++)
+		res += str[i];
+
+	return res;
+}
+
+string Cat10KyTuLayMaSach(string str){
+	string res;
+	for(int i = 7; i < 17; i++)
+		res += str[i];
+
+	return res;
+}
+
+void DisplaySortQH_DOCGIA(DS_DAUSACH &dsds, DocGia a[], int sl, string msach[], int length){
+	DAU_SACH* ds;
+	
+	cls(6, 24, 40, 80);
+	bool check = true;
+	string tempStr = "";
+	string maSX[MAX_DOCGIA];
+	int i = 0, j = 0, distance = 0, SLptuMaSX = 0;
+	
+	while(i != sl){
+	Reset:
+		int mathe = StringToNumber(CutID_DAUSACH(msach[j]));
+		if(mathe == a[i].maThe){
+			tempStr = Cat7KyTuDau(msach[j]);
+			j++;
 		}
-	}
+		else
+			i++;
 
-	string arayIDSach[soLuongDocGia];
-//	lay ma sach va ten sach cho vao mang
-	for(int i=0; i<SL; i++){
-		for(NODE_MUONTRA* m = DGBiKhoa[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight){ //chay den danh sach muon tra de lay ma sach ra
-			distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
-			if(distance >= 1){ // neu ngay qua han cua cuon sach nay bang ngay qua han lo
-				string madg = NumberToString(DGBiKhoa[i].maThe);
-				arayIDSach[x] = madg + "/" + m->info.maSach;
-//				string array: madg + ma sach
-				x++; // length array masach
+		for(NODE_MUONTRA *m = a[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight){
+			if(tempStr == m->info.maSach)
+				distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
+		}
+		
+		maSX[SLptuMaSX] = NumberToString(a[i].maThe) + "/" + tempStr + "/" + NumberToString(distance);
+		SLptuMaSX++;
+		if(j < length)
+			goto Reset;
+		else
+			break;
+
+	}
+	SLptuMaSX = SLptuMaSX - 1;
+	for(int i=0; i<SLptuMaSX; i++){
+		for(int j=0; j<SLptuMaSX - 1; j++){
+			if(StringToNumber(Cat18KyTuDau(maSX[i])) > StringToNumber(Cat18KyTuDau(maSX[j]))){
+				string tam = maSX[j];
+				maSX[j] = maSX[i];
+				maSX[i] =  tam;
 			}
 		}
 	}
-	XuatMang(dsds, DGBiKhoa, SL, arayIDSach, x);
-	Sleep(3000);
+	
+	int arrX[] = {3, 14, 50, 70, 85, 122, 136}, y;
+	char menu[][50] = {
+			"Ma The",
+			"Ho",
+			"Ten",
+			"Ma Sach",
+			"Ten Sach",
+			"Ngay Muon",
+			"So Ngay QH"
+	};
+	
+	int maxRow = 32, PageNum = length/maxRow; // 28 row in Main Table
+	int start = (length/maxRow)*maxRow;
+	int end = (length/maxRow)*maxRow + maxRow <= length ? (length/maxRow)*maxRow + maxRow : length;
+	string IDSach;
+	while(1){
+	ResetDisplay:
+		y = 5;
+		for(int i=0; i<7; i++){
+			gotoxy(arrX[i], 3);
+			SetColor(12);
+			cout << menu[i];
+		}
+
+		SetColor(12);
+		gotoxy(134, 38);
+		cout << " ";
+		gotoxy(134, 38);
+		if(start - maxRow >= 0)
+			cout << "<";
+		gotoxy(136, 38);
+		cout << "Trang " << PageNum + 1;
+		gotoxy(145, 38);
+		cout << " ";
+		gotoxy(145, 38);
+		if(start + maxRow < length)
+			cout << ">";
+		
+		SetColor(0);
+		for(int j=0; j<SLptuMaSX; j++){
+			tempStr = Cat10KyTuLayMaSach(maSX[j]);
+			for(int i=0; i<sl; i++){
+				for(NODE_MUONTRA *m = a[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight){
+					if(StringToNumber(CutID_DAUSACH(maSX[j])) == a[i].maThe && m->info.maSach == tempStr){
+						gotoxy(arrX[0], y);
+						cout << a[i].maThe;
+						gotoxy(arrX[1], y);
+						cout << a[i].ho;
+						gotoxy(arrX[2], y);
+						cout << a[i].ten;
+						gotoxy(arrX[3], y);
+						cout << tempStr;
+
+						GetInforSortQH_DAUSACH(dsds, tempStr, ds);
+
+						gotoxy(arrX[4], y);
+						cout << ds->tensach;
+						gotoxy(arrX[5], y);
+						cout << m->info.NgayMuon.Ngay<<"/"<<m->info.NgayMuon.Thang<<"/"<<m->info.NgayMuon.Nam;
+						distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
+
+						gotoxy(arrX[6] + 2, y);
+						cout << distance;
+						y++;
+					}
+				}
+			}
+		}
+		SetColor(3);
+		gotoxy(3, 38);
+		cout << "Esc: Exit!";
+		char input;
+		while(1){
+			input = getch();
+			switch(input){
+//				Pagination <-  ->
+				case Left: {
+					if(start - maxRow >= 0){
+						cls(5, 37, 3, 145);
+						start -= maxRow; // Max Row: 28 rows
+						end = start + maxRow;
+						PageNum--;
+					}
+					goto ResetDisplay;
+				}
+
+				case Right: {
+					if(start + maxRow  < length){
+						cls(5, 37, 3, 145);
+						start += maxRow; // Max Row: 28 rows
+						end = start + maxRow <= length ? start + maxRow : length;
+						PageNum++;
+					}
+					goto ResetDisplay;
+				}
+
+				case Esc:
+					cls(3, 38, 1, 147);
+					return;
+			} // End switch
+		}
+	}
+}
+
+void SortQH_DOCGIA(Tree &t, DS_DAUSACH &dsds){
+	int i = 0, CountDgBlocked = 0, CountSachQH = 0, distance = 0;
+	DocGia a[soLuongDocGia];
+	DocGia DGBiKhoa[soLuongDocGia];
+	string arrStringIDsach[soLuongDocGia];
+	TreeToArray(t, a, i);
+
+	for(int i=0; i<soLuongDocGia; i++){ // Select Dg Blocked to Array
+		if(a[i].trangThai == 0){
+			DGBiKhoa[CountDgBlocked] = a[i];
+			CountDgBlocked++;
+			
+			for(NODE_MUONTRA* m = a[i].DS_MUONTRA.pHead; m != NULL; m = m->pRight){
+				distance = Distance(m->info.NgayMuon.Ngay, m->info.NgayMuon.Thang, m->info.NgayMuon.Nam) - 7;
+				if(distance >= 1){
+					string maDg = NumberToString(a[i].maThe);
+					arrStringIDsach[CountSachQH] = maDg + "/" + m->info.maSach;
+					CountSachQH++;
+				}
+			}
+		}
+	}
+	
+	DisplaySortQH_DOCGIA(dsds, DGBiKhoa, CountDgBlocked, arrStringIDsach, CountSachQH);
 }
 
 /* KET THUC DOC GIA */
@@ -2953,8 +3104,8 @@ void InDanhSachMuonQH(Tree &t, DS_DAUSACH &dsds){
 /* Muon Tra Sach */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MuonSach(Tree &t, DS_DAUSACH &dsds, NODE_DanhMucSach* &n_dms) {
-	time_t ti = time(0);   // get time now
+void MuonSach(Tree &t, DS_DAUSACH &dsds, NODE_DanhMucSach* &n_dms){
+	time_t ti = time(0); // get time now
 	tm* now = localtime(&ti);
 	int dayNow = now->tm_mday;
 	int monthNow = now->tm_mon + 1;
@@ -2963,14 +3114,15 @@ void MuonSach(Tree &t, DS_DAUSACH &dsds, NODE_DanhMucSach* &n_dms) {
 	n_dms->data.trangThai = 1;
 
 	ptrMuonTra p = new NODE_MUONTRA;
-	if (p == NULL) {
+	if(p == NULL)
 		return;
-	}
-	for(int i = 0; i < dsds.soLuong; i++){ // tang so lan muon len
+
+	for(int i=0; i<dsds.soLuong; i++){ // Tang so lan muon len
 		if(dsds.dausach[i]->ISBN == CutID_DAUSACH(n_dms->data.maSach)){
 			dsds.dausach[i]->demSoLanMuon++;
 		}
 	}
+	
 	p->info.maSach = n_dms->data.maSach;
 	p->info.NgayMuon.Nam = yearNow;// nam hien tai
 	p->info.NgayMuon.Ngay = dayNow;// ngay hien tai
@@ -2984,18 +3136,17 @@ void MuonSach(Tree &t, DS_DAUSACH &dsds, NODE_DanhMucSach* &n_dms) {
 	p->pLeft = NULL;
 	p->pRight = NULL;
 
-	if (t->info.DS_MUONTRA.pHead == NULL) {
+	if(t->info.DS_MUONTRA.pHead == NULL){
 		t->info.DS_MUONTRA.pHead = p;
 		t->info.DS_MUONTRA.pLast = p;
 	}
-	else {
+	else{
 		t->info.DS_MUONTRA.pLast->pRight = p;
 		p->pLeft = t->info.DS_MUONTRA.pLast;
 		t->info.DS_MUONTRA.pLast = p;
 	}
 
 	t->info.slSachMuon++;
-	
 	t->info.slSachDangMuon++;
 }
 
@@ -3626,17 +3777,18 @@ ResetDisplay:
 void Menu_DOCGIA(Tree &t, DS_DAUSACH &ds){
 	system("color f0");
 	ShowConsoleCursor(false);
-	int chon, res, arrX[5] = {62, 61, 64, 69}, ISBN, RowTable;
+	int chon, res, arrX[] = {62, 61, 64, 60, 69}, ISBN, RowTable;
 	bool case1;
 	char Case_DOCGIA[][100] = {
 								"Them The Doc Gia Moi",
 								"Hieu Chinh The Doc Gia",
 								"Danh Sach Doc Gia",
+								"Danh Sach Doc Gia Qua Han",
 								"Thoat!",
 							};
 
 	while(1){
-		chon = MenuThuancutee(Case_DOCGIA, 4, 30, arrX, 57);
+		chon = MenuThuancutee(Case_DOCGIA, 5, 30, arrX, 57);
 
 		firstName = "";
 		maThe = NULL;
@@ -3650,7 +3802,7 @@ void Menu_DOCGIA(Tree &t, DS_DAUSACH &ds){
 				DrawBorder(1, 3, 32, 35, 0); // Draw Table Left
 				DrawBorder(35, 3, 113, 35, 0); // Draw Table Right
 				while(case1)
-					Add_DOCGIA(t, RandomID(), RowTable, case1);
+					Add_DOCGIA(t, RandomID(t), RowTable, case1);
 
 				ofstream FileOut;
 				FileOut.open("DocGia.txt", ios::out);
@@ -3681,6 +3833,10 @@ void Menu_DOCGIA(Tree &t, DS_DAUSACH &ds){
 				break;
 				
 			case 4:
+				SortQH_DOCGIA(t, ds);
+				break;
+				
+			case 5:
 				return;
 			}
 		Sleep(300);
@@ -3755,14 +3911,13 @@ void Menu_DAUSACH(DS_DAUSACH &ds, Tree &t){
 	system("color f0");
 	
 	DS_DANHMUCSACH dsdms;
-	int chon, flag = 1, arrX[] = {66, 62, 66, 64, 61, 62, 69};
+	int chon, flag = 1, arrX[] = {66, 62, 66, 64, 61, 69};
 	char Case_DauSach[][100] = {
 									"Them Dau Sach",
 									"Cac The Loai Dau Sach",
 									"Tim Dau Sach",
 									"Xoa Mot Dau Sach",
 									"10 Sach Muon Nhieu Nhat",
-									"Danh Sach Sach Muon Qua Han",
 									"Thoat!"
 								};
 
@@ -3771,7 +3926,7 @@ void Menu_DAUSACH(DS_DAUSACH &ds, Tree &t){
 			gotoxy(57, 26 + i);
 			cout << "                               ";
 		}
-		chon = MenuThuancutee(Case_DauSach, 7, 30, arrX, 57);
+		chon = MenuThuancutee(Case_DauSach, 6, 30, arrX, 57);
 		switch(chon){
 			case 1: { // Case Add DAU SACH
 				cls(3, 30, 2, 145); // Cls Main Table
@@ -3796,7 +3951,12 @@ void Menu_DAUSACH(DS_DAUSACH &ds, Tree &t){
 			}
 			
 			case 4:
-				XoaMaSachChuaMuon(ds);
+				cls(3, 30, 2, 145); // Cls Main Table
+				DrawBorder(1, 3, 32, 35, 0); // Draw Table Left
+				DrawBorder(35, 3, 113, 35, 0); // Draw Table Right
+				
+				DeleteByID_DAUSACH(ds);
+				SaveFile_DAUSACH(ds);
 				break;
 				
 			case 5:
@@ -3804,10 +3964,6 @@ void Menu_DAUSACH(DS_DAUSACH &ds, Tree &t){
 				break;
 				
 			case 6:
-				InDanhSachMuonQH(t, ds);
-				break;
-				
-			case 7:
 				return;
 		}
 		Sleep(300);
@@ -3850,7 +4006,7 @@ void Main_Menu(Tree &t, DS_DAUSACH &dsds){
 								};
 
 	while(1){
-		for(int i=0; i<10; i++){
+		for(int i=0; i<11; i++){
 			gotoxy(57, 22 + i);
 			cout << "                               ";
 		}
