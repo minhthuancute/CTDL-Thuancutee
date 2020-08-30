@@ -110,7 +110,6 @@ struct DocGia{
 
 struct CAYNHIPHANTK_TheDocGia{
 	DocGia info;
-
 	CAYNHIPHANTK_TheDocGia* pLeft;
 	CAYNHIPHANTK_TheDocGia* pRight;
 };
