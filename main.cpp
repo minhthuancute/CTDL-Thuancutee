@@ -552,6 +552,7 @@ string TheLoai(){
 
 ptrDMSach Newnode(DANH_MUC_SACH dms){
 	ptrDMSach p = new NODE_DanhMucSach;
+	
 	if(p == NULL)
 		return NULL;
 
